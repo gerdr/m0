@@ -1,0 +1,40 @@
+export M0_VALUE := uint64_t
+export M0_INT := int64_t
+export M0_UINT := uint64_t
+export M0_NUM := double
+export M0_OPCODE := uint32_t
+export M0_OPS := m0.ops
+
+export M0_IPD := \
+	OP_FUNCS \
+	CHUNKS \
+	CHUNK_INFO \
+	CHUNK_MAP \
+	CALL_FRAMES \
+	CONFIG \
+	ARGC \
+	ARGV
+
+export M0_CFG := \
+	M0V \
+	REGSZ \
+	CFSZ \
+	IREGSZ \
+	NREGSZ \
+	OPCODESZ \
+	PTRSZ \
+	ENDIANNESS
+
+export M0_REG := \
+	CF \
+	PCF \
+	PC \
+	RETPC \
+	EH \
+	CHUNK \
+	CONSTS \
+	MDS \
+	BCS \
+	INTERP \
+	SPC4RENT \
+	SPILLCF
