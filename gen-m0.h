@@ -82,10 +82,19 @@ struct m0_symbol_
 
 #include <assert.h>
 
+typedef struct m0_mob_header_ m0_mob_header;
+struct m0_mob_header_
+{
+	uint8_t format[8];
+	uint32_t version;
+};
+
 extern const m0_value M0_CONFIG[M0_CONFIGSZ_];
 
 extern void *m0_platform_mmap_file_private(const char *name, size_t *size);
 extern bool m0_platform_munmap(void *block, size_t size);
+
+extern bool m0_mob_verify_header(const m0_mob_header *header);
 
 #endif
 

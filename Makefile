@@ -3,7 +3,7 @@ CFLAGS := -std=c99 -Werror -Weverything
 RM := rm -f
 PERL := perl
 
-SOURCES := interp.c ops.c platform.c
+SOURCES := interp.c mob.c ops.c platform.c
 OBJECTS := $(SOURCES:%.c=%.o)
 GEN_FILES := m0.h ops.c
 TESTS := sanity
