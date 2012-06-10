@@ -5,6 +5,17 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#define M0_VERSION __M0_VERSION__
+
+enum
+{
+	M0_OPCODESZ = sizeof (__M0_OPCODE__),
+	M0_INTSZ = sizeof (__M0_INT__),
+	M0_NUMSZ = sizeof (__M0_NUM__),
+	M0_VALUESZ = sizeof (__M0_VALUE__),
+	M0_PTRSZ = sizeof (void *)
+};
+
 enum
 {
 	__M0_OPS__
@@ -37,7 +48,7 @@ typedef union m0_value_ m0_value;
 union m0_value_
 {
 	__M0_VALUE__ bits;
-	uint8_t bytes[sizeof (__M0_VALUE__)];
+	uint8_t bytes[M0_VALUESZ];
 	m0_int as_int;
 	m0_uint as_uint;
 	m0_num as_num;

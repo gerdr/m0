@@ -1,3 +1,4 @@
+export M0_VERSION := 0x20120610
 export M0_VALUE := uint64_t
 export M0_INT := int64_t
 export M0_UINT := uint64_t
