@@ -37,8 +37,8 @@ $(CHECKS) : %-check : t-%
 $(TEST_BINARIES) : % : %.c $(OBJECTS)
 	$(CC) $(CFLAGS) -o $@ $^
 
-$(GEN_FILES) : % : gen-%.pl gen-% gen.pl CONFIG m0.ops
-	$(PERL) gen-$@.pl <gen-$@ >$@
+$(GEN_FILES) : % : gen-%.pl src-% gen.pl CONFIG m0.ops
+	$(PERL) gen-$@.pl <src-$@ >$@
 
 $(OBJECTS) : %.o : %.c m0.h
 	$(CC) $(CFLAGS) -c -o $@ $<
