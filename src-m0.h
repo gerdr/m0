@@ -9,7 +9,7 @@
 
 enum
 {
-	M0_OPCODESZ = sizeof (__M0_OPCODE__),
+	M0_OPSZ = sizeof (__M0_OP__),
 	M0_INTSZ = sizeof (__M0_INT__),
 	M0_NUMSZ = sizeof (__M0_NUM__),
 	M0_VALUESZ = sizeof (__M0_VALUE__),
@@ -39,7 +39,7 @@ enum
 	__M0_REG__
 };
 
-typedef __M0_OPCODE__ m0_opcode;
+typedef __M0_OP__ m0_op;
 typedef __M0_INT__ m0_int;
 typedef __M0_UINT__ m0_uint;
 typedef __M0_NUM__ m0_num;
@@ -54,29 +54,14 @@ union m0_value_
 	m0_num as_num;
 	void *as_ptr;
 	const void *as_cptr;
-	intptr_t as_word;
-	uintptr_t as_uword;
+	ptrdiff_t as_word;
+	size_t as_uword;
 };
 
 typedef m0_value m0_interp[M0_INTERPSZ_];
 typedef m0_value m0_callframe[];
 
-typedef struct m0_string_ m0_string;
-struct m0_string_
-{
-	uint32_t flags;
-	uint32_t size;
-	uint8_t bytes;
-};
-
-typedef struct m0_symbol_ m0_symbol;
-struct m0_symbol_
-{
-	uint32_t flags;
-	uint32_t size;
-	uint32_t hash;
-	uint8_t bytes;
-};
+extern bool m0_ops_run(m0_interp *interp, m0_callframe *cf);
 
 #ifdef M0_SOURCE
 
@@ -89,12 +74,77 @@ struct m0_mob_header_
 	uint32_t version;
 };
 
-extern const m0_value M0_CONFIG[M0_CONFIGSZ_];
+typedef struct m0_object_ m0_object;
+struct m0_object_
+{
+	uint32_t id;
+	uint32_t byte_size;
+};
+
+typedef struct m0_string_ m0_string;
+struct m0_string_
+{
+	uint32_t id;
+	uint32_t byte_size;
+	uint8_t bytes[];
+};
+
+typedef struct m0_symbol_ m0_symbol;
+struct m0_symbol_
+{
+	uint32_t id;
+	uint32_t byte_size;
+	uint32_t hash;
+	uint8_t bytes[];
+};
+
+typedef struct m0_segment_ m0_segment;
+struct m0_segment_
+{
+	uint32_t id;
+	uint32_t byte_size;
+	uint32_t entry_count;
+	uint32_t blocks[];
+};
+
+typedef struct m0_chunk_ m0_chunk;
+struct m0_chunk_
+{
+	const m0_symbol *name;
+	const m0_segment *constants_segment;
+	const m0_segment *metadata_segment;
+	const m0_segment *bytecode_segment;
+};
+
+union m0_aliasing_hack_
+{
+	m0_object as_object;
+	m0_segment as_segment;
+	m0_string as_string;
+	m0_symbol as_symbol;
+};
+
+extern void (*M0_OP_FUNCS[M0_OPCOUNT_])(m0_callframe *);
 
 extern void *m0_platform_mmap_file_private(const char *name, size_t *size);
 extern bool m0_platform_munmap(void *block, size_t size);
 
 extern bool m0_mob_verify_header(const m0_mob_header *header);
+
+static inline const m0_chunk *m0_interp_chunks(const m0_interp *interp)
+{
+	return (*interp)[M0_IPD_CHUNKS].as_cptr;
+}
+
+static inline size_t m0_reg_chunk(const m0_callframe *cf)
+{
+	return (*cf)[M0_REG_CHUNK].as_uword;
+}
+
+static inline size_t m0_reg_pc(const m0_callframe *cf)
+{
+	return (*cf)[M0_REG_PC].as_uword;
+}
 
 #endif
 

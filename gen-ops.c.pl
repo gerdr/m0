@@ -6,14 +6,7 @@ sub m0_ops {
 	while(<$fh>) {
 		next unless /^\w/;
 		chomp;
-		my $op = 'M0_'.uc;
-		my $func = 'op_'.$_;
-		print <<EOS
-		case $op:
-		$func();
-		continue;
-
-EOS
+		print "\top_$_,\n";
 	}
 	close $fh;
 }

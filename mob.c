@@ -7,7 +7,7 @@
 static const uint8_t FORMAT[8] = {
 	'M', '0', 'B',
 	'L', 'E',
-	'0' + sizeof (m0_opcode),
+	'0' + sizeof (m0_op),
 	'0' + sizeof (m0_int),
 	'0' + sizeof (m0_num)
 };

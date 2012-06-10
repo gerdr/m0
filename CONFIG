@@ -3,7 +3,7 @@ M0_VALUE = uint64_t
 M0_INT = int64_t
 M0_UINT = uint64_t
 M0_NUM = double
-M0_OPCODE = uint32_t
+M0_OP = uint32_t
 M0_OPS = m0.ops
 
 M0_IPD = \
