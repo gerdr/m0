@@ -2,12 +2,15 @@ CC := clang
 CFLAGS := -std=c99 -Werror -Weverything
 RM := rm -f
 PERL := perl
+ECHO := echo
+SHELL := sh
 
 SOURCES := interp.c mob.c ops.c platform.c
 OBJECTS := $(SOURCES:%.c=%.o)
 GEN_FILES := m0.h ops.c
 TESTS := sanity
 TEST_BINARIES := $(TESTS:%=t-%)
+TEST_SCRIPT := test.sh
 CHECKS := $(TESTS:%=%-check)
 TARGETS := build test clean realclean $(CHECKS) help
 FILES_TO_CLEAN := $(OBJECTS) $(TESTS)
@@ -21,8 +24,8 @@ export M0_VERSION M0_VALUE M0_INT M0_UINT M0_NUM M0_OPCODE \
 
 build : $(OBJECTS)
 
-test : $(TEST_BINARIES)
-	@set -e; for TEST in $^; do echo ./$$TEST; ./$$TEST; done
+test : $(TEST_SCRIPT) $(TEST_BINARIES)
+	@$(SHELL) $^
 
 clean :
 	$(RM) $(FILES_TO_CLEAN)
@@ -31,7 +34,7 @@ realclean : FILES_TO_CLEAN += $(FILES_TO_REALCLEAN)
 realclean : clean
 
 help :
-	@echo $(TARGETS)
+	@$(ECHO) $(TARGETS)
 
 $(CHECKS) : %-check : t-%
 	./$<
