@@ -13,7 +13,7 @@ TEST_BINARIES := $(TESTS:%=t-%)
 TEST_SCRIPT := test.sh
 CHECKS := $(TESTS:%=%-check)
 TARGETS := build test clean realclean $(CHECKS) help
-FILES_TO_CLEAN := $(OBJECTS) $(TESTS)
+FILES_TO_CLEAN := $(OBJECTS) $(TEST_BINARIES)
 FILES_TO_REALCLEAN := $(GEN_FILES)
 
 include CONFIG
