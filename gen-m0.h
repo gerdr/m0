@@ -68,8 +68,14 @@ struct m0_symbol_
 };
 
 #ifdef M0_SOURCE
+
+#include <assert.h>
+
 extern const m0_value M0_CONFIG[M0_CONFIGSZ_];
-extern bool m0_platform_mmap_file_private(const char *name);
+
+extern void *m0_platform_mmap_file_private(const char *name);
+extern bool m0_platform_munmap(void *block, size_t size);
+
 #endif
 
 #endif
