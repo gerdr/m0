@@ -9,7 +9,7 @@
 	int status_ = fclose(fp_); assert(status_ == 0); \
 } while(0)
 
-void *m0_platform_mmap_file_private(const char *name)
+void *m0_platform_mmap_file_private(const char *name, size_t *size)
 {
 	FILE *file = NULL;
 	void *buffer = NULL;
@@ -22,15 +22,15 @@ void *m0_platform_mmap_file_private(const char *name)
 	if(pos < 0)
 		goto FAIL;
 
-	size_t size = (size_t)pos;
-	buffer = malloc(size);
+	buffer = malloc((size_t)pos);
 	if(!buffer)
 		goto FAIL;
 
-	if(!fread(buffer, size, 1, file))
+	if(!fread(buffer, (size_t)pos, 1, file))
 		goto FAIL;
 
 	close_file(file);
+	*size = (size_t)pos;
 	return buffer;
 
 FAIL:
