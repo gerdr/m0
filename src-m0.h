@@ -19,19 +19,19 @@ enum
 enum
 {
 	__M0_OPS__
-	M0_OPCOUNT_
+	M0_OPCOUNT
 };
 
 enum
 {
 	__M0_IPD__
-	M0_INTERPSZ_
+	M0_INTERPSZ
 };
 
 enum
 {
 	__M0_CFG__
-	M0_CONFIGSZ_
+	M0_CONFIGSZ
 };
 
 enum
@@ -58,14 +58,8 @@ union m0_value_
 	size_t as_uword;
 };
 
-typedef m0_value m0_interp[M0_INTERPSZ_];
+typedef m0_value m0_interp[M0_INTERPSZ];
 typedef m0_value m0_callframe[];
-
-extern bool m0_ops_run(m0_interp *interp, m0_callframe *cf);
-
-#ifdef M0_SOURCE
-
-#include <assert.h>
 
 typedef struct m0_mob_header_ m0_mob_header;
 struct m0_mob_header_
@@ -124,17 +118,21 @@ union m0_aliasing_hack_
 	m0_symbol as_symbol;
 };
 
-typedef void m0_opfunc(m0_callframe *);
+typedef void m0_opfunc(m0_callframe *, uint8_t, uint8_t, uint8_t);
 
-extern m0_opfunc *const M0_OP_FUNCS[M0_OPCOUNT_];
+extern m0_opfunc *const M0_OP_FUNCS[M0_OPCOUNT];
 
 extern void *m0_platform_mmap_file_private(const char *name, size_t *size);
 extern bool m0_platform_munmap(void *block, size_t size);
 
 extern bool m0_mob_verify_header(const m0_mob_header *header);
 
+extern bool m0_ops_run(m0_interp *interp, m0_callframe *cf);
+
 __M0_IPD_FUNCS__
 __M0_REG_FUNCS__
+#ifdef M0_SOURCE
+#include <assert.h>
 #endif
 
 #endif

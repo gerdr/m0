@@ -53,6 +53,7 @@ sub m0_ipd_funcs {
 		next unless defined $member;
 		$type .= ' ' unless $type =~ /\*$/;
 		my $id = 'M0_IPD_'.uc $name;
+		$name = lc $name;
 		print <<EOS
 static inline ${type}m0_interp_$name(const m0_interp *interp)
 {
