@@ -9,10 +9,9 @@
 } while(0)
 
 static const m0_mobheader HEADER = {
-	{ 'M', '0', 'B' },
-	{ (M0_ENDIANNESS == 0 ? 'L' : 'B'), 'E' },
-	{ '0' + sizeof (m0_op), '0' + sizeof (m0_int), '0' + sizeof (m0_num) },
-	M0_VERSION
+	{ 'M', 0, 'B' },
+	{ M0_VERSION },
+	{ M0_ENDIANNESS, M0_OPSZ, M0_INTSZ, M0_NUMSZ }
 };
 
 bool m0_mob_load(const char *name, FILE *err)
@@ -36,29 +35,22 @@ bool m0_mob_load(const char *name, FILE *err)
 
 	header = (m0_mobheader *)bc;
 
-	if(memcmp(header->magic_number, HEADER.magic_number,
-		sizeof HEADER.magic_number))
+	if(memcmp(header->magic, HEADER.magic, sizeof HEADER.magic))
 	{
 		cry("file %s has wrong magic number", name);
 		goto FAIL;
 	}
 
-	if(memcmp(header->endianness, HEADER.endianness, sizeof HEADER.endianness))
+	if(memcmp(header->version, HEADER.version, sizeof HEADER.version))
 	{
-		cry("file %s has wrong endianness", name);
+		cry("file %s has wrong version - expected %X, got %X",
+			name, *HEADER.version, *header->version);
 		goto FAIL;
 	}
 
 	if(memcmp(header->config, HEADER.config, sizeof HEADER.config))
 	{
 		cry("file %s has wrong type configuration", name);
-		goto FAIL;
-	}
-
-	if(header->version != HEADER.version)
-	{
-		cry("file %s has wrong version - expected %lX, got %lX", name,
-			(unsigned long)HEADER.version, (unsigned long)header->version);
 		goto FAIL;
 	}
 

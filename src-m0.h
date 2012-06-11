@@ -5,16 +5,17 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#define M0_VERSION __M0_VERSION__
-
 enum
 {
+	M0_VERSION = __M0_VERSION__,
+
 	M0_OPSZ = sizeof (__M0_OP_TYPE__),
 	M0_INTSZ = sizeof (__M0_INT_TYPE__),
 	M0_NUMSZ = sizeof (__M0_NUM_TYPE__),
 	M0_REGSZ = sizeof (__M0_VALUE_TYPE__),
 	M0_PTRSZ = sizeof (void *),
 	M0_CFMAXSZ = 256 * M0_REGSZ,
+
 	M0_ENDIANNESS = __M0_ENDIANNESS__
 };
 
@@ -85,10 +86,9 @@ typedef m0_value m0_callframe[];
 typedef struct m0_mobheader_ m0_mobheader;
 struct m0_mobheader_
 {
-	uint8_t magic_number[3];
-	uint8_t endianness[2];
-	uint8_t config[3];
-	uint32_t version;
+	uint8_t magic[3];
+	uint8_t version[1];
+	uint8_t config[4];
 };
 
 typedef struct m0_object_ m0_object;
