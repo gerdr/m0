@@ -1,0 +1,8 @@
+OP_FUNCS	cptr	m0_opfunc *const *
+CHUNKS		cptr	const m0_chunk *
+CHUNK_INFO	cptr	const void *
+CHUNK_MAP	cptr	const void *
+CALL_FRAMES	cptr	const void *
+CONFIG		cptr	const m0_value *
+ARGC		uint	m0_uint
+ARGV		cptr	const void *

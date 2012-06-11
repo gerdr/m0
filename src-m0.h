@@ -1,3 +1,4 @@
+
 #ifndef M0_H_
 #define M0_H_
 
@@ -9,10 +10,10 @@
 
 enum
 {
-	M0_OPSZ = sizeof (__M0_OP__),
-	M0_INTSZ = sizeof (__M0_INT__),
-	M0_NUMSZ = sizeof (__M0_NUM__),
-	M0_VALUESZ = sizeof (__M0_VALUE__),
+	M0_OPSZ = sizeof (__M0_OP_TYPE__),
+	M0_INTSZ = sizeof (__M0_INT_TYPE__),
+	M0_NUMSZ = sizeof (__M0_NUM_TYPE__),
+	M0_VALUESZ = sizeof (__M0_VALUE_TYPE__),
 	M0_PTRSZ = sizeof (void *)
 };
 
@@ -39,15 +40,15 @@ enum
 	__M0_REG__
 };
 
-typedef __M0_OP__ m0_op;
-typedef __M0_INT__ m0_int;
-typedef __M0_UINT__ m0_uint;
-typedef __M0_NUM__ m0_num;
+typedef __M0_OP_TYPE__ m0_op;
+typedef __M0_INT_TYPE__ m0_int;
+typedef __M0_UINT_TYPE__ m0_uint;
+typedef __M0_NUM_TYPE__ m0_num;
 
 typedef union m0_value_ m0_value;
 union m0_value_
 {
-	__M0_VALUE__ bits;
+	__M0_VALUE_TYPE__ bits;
 	uint8_t bytes[M0_VALUESZ];
 	m0_int as_int;
 	m0_uint as_uint;
@@ -124,28 +125,17 @@ union m0_aliasing_hack_
 	m0_symbol as_symbol;
 };
 
-extern void (*M0_OP_FUNCS[M0_OPCOUNT_])(m0_callframe *);
+typedef void m0_opfunc(m0_callframe *);
+
+extern m0_opfunc *const M0_OP_FUNCS[M0_OPCOUNT_];
 
 extern void *m0_platform_mmap_file_private(const char *name, size_t *size);
 extern bool m0_platform_munmap(void *block, size_t size);
 
 extern bool m0_mob_verify_header(const m0_mob_header *header);
 
-static inline const m0_chunk *m0_interp_chunks(const m0_interp *interp)
-{
-	return (*interp)[M0_IPD_CHUNKS].as_cptr;
-}
-
-static inline size_t m0_reg_chunk(const m0_callframe *cf)
-{
-	return (*cf)[M0_REG_CHUNK].as_uword;
-}
-
-static inline size_t m0_reg_pc(const m0_callframe *cf)
-{
-	return (*cf)[M0_REG_PC].as_uword;
-}
-
+__M0_IPD_FUNCS__
+__M0_REG_FUNCS__
 #endif
 
 #endif

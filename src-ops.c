@@ -3,8 +3,8 @@
 
 // TODO
 
-void (*M0_OP_FUNCS[M0_OPCOUNT_])(m0_callframe *) = {
-__M0_OPS__
+m0_opfunc *const M0_OP_FUNCS[M0_OPCOUNT_] = {
+	__M0_OPS__
 };
 
 bool m0_ops_run(m0_interp *interp, m0_callframe *cf)

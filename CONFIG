@@ -1,41 +1,10 @@
 M0_VERSION = 0x20120610
-M0_VALUE = uint64_t
-M0_INT = int64_t
-M0_UINT = uint64_t
-M0_NUM = double
-M0_OP = uint32_t
-M0_OPS = m0.ops
-
-M0_IPD = \
-	OP_FUNCS \
-	CHUNKS \
-	CHUNK_INFO \
-	CHUNK_MAP \
-	CALL_FRAMES \
-	CONFIG \
-	ARGC \
-	ARGV
-
-M0_CFG = \
-	M0V \
-	REGSZ \
-	CFSZ \
-	IREGSZ \
-	NREGSZ \
-	OPCODESZ \
-	PTRSZ \
-	ENDIANNESS
-
-M0_REG = \
-	CF \
-	PCF \
-	PC \
-	RETPC \
-	EH \
-	CHUNK \
-	CONSTS \
-	MDS \
-	BCS \
-	INTERP \
-	SPC4RENT \
-	SPILLCF
+M0_VALUE_TYPE = uint64_t
+M0_INT_TYPE = int64_t
+M0_UINT_TYPE = uint64_t
+M0_NUM_TYPE = double
+M0_OP_TYPE = uint32_t
+M0_OPS_FILE = m0.ops
+M0_IPD_FILE = m0.ipd
+M0_CFG_FILE = m0.cfg
+M0_REG_FILE = m0.reg
