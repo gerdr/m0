@@ -8,7 +8,7 @@ int main(void)
 {
 	assert(CHAR_BIT == 8);
 
-	assert(M0_OPCODESZ == 4 || M0_OPCODESZ == 8 || M0_OPCODESZ == 16);
+	assert(M0_OPSZ == 4);
 	assert(M0_INTSZ == 2 || M0_INTSZ == 4 || M0_INTSZ == 8 || M0_INTSZ == 16);
 	assert(M0_NUMSZ == 4 || M0_NUMSZ == 8 || M0_NUMSZ == 16);
 
