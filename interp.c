@@ -12,7 +12,7 @@ static const m0_value CONFIG[M0_CONFIGSZ] = {
 	[M0_CFG_ENDIANNESS].as_uint = M0_ENDIANNESS
 };
 
-const m0_interp M0_INTERP = {
+const m0_interp M0_INTERP = { {
 	[M0_IPD_OP_FUNCS].as_cptr = M0_OP_FUNCS,
 	[M0_IPD_CONFIG].as_cptr = CONFIG,
-};
+} };

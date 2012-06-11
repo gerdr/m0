@@ -57,7 +57,7 @@ sub m0_ipd_funcs {
 		print <<EOS
 static inline ${type}m0_interp_$name(const m0_interp *interp)
 {
-	return (*interp)[$id].as_$member;
+	return interp->data[$id].as_$member;
 }
 
 EOS

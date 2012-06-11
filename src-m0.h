@@ -61,7 +61,7 @@ union m0_value_
 	uint32_t as_quad;
 };
 
-typedef m0_value m0_interp[M0_INTERPSZ];
+typedef struct { m0_value data[M0_INTERPSZ]; } m0_interp;
 typedef m0_value m0_callframe[];
 
 typedef struct m0_mob_header_ m0_mob_header;
