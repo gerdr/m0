@@ -1,5 +1,12 @@
-*.[oda]
-t-*
-!t-*.c
+# build files
+*.[oa]
+*.exe
+
+# generated files
 m0.h
 ops.c
+
+# test binaries
+t-sanity
+t-mob
+t-ops

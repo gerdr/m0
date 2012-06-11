@@ -3,16 +3,75 @@
 
 #include <string.h>
 
-// TODO: support big-endian architectures
-static const uint8_t FORMAT[8] = {
-	'M', '0', 'B',
-	'L', 'E',
-	'0' + sizeof (m0_op),
-	'0' + sizeof (m0_int),
-	'0' + sizeof (m0_num)
+#define cry(FORMAT, ...) do if(err) { \
+	fprintf(err, "m0: " FORMAT "\n", __VA_ARGS__); \
+	int status_ = fflush(err); assert(status_ == 0); \
+} while(0)
+
+static const m0_mobheader HEADER = {
+	{ 'M', '0', 'B' },
+	{ (M0_ENDIANNESS == 0 ? 'L' : 'B'), 'E' },
+	{ '0' + sizeof (m0_op), '0' + sizeof (m0_int), '0' + sizeof (m0_num) },
+	M0_VERSION
 };
 
-bool m0_mob_verify_header(const m0_mob_header *header)
+bool m0_mob_load(const char *name, FILE *err)
 {
-	return memcmp(header->format, FORMAT, sizeof FORMAT);
+	void *bc = NULL;
+	size_t size = 0;
+	const m0_mobheader *header = NULL;
+
+	bc = m0_platform_mmap_file_private(name, &size);
+	if(!bc)
+	{
+		cry("failed to mmap file %s", name);
+		goto FAIL;
+	}
+
+	if(size < sizeof (m0_mobheader) + sizeof (m0_segment))
+	{
+		cry("file %s is too small to be a bytecode file", name);
+		goto FAIL;
+	}
+
+	header = (m0_mobheader *)bc;
+
+	if(memcmp(header->magic_number, HEADER.magic_number,
+		sizeof HEADER.magic_number))
+	{
+		cry("file %s has wrong magic number", name);
+		goto FAIL;
+	}
+
+	if(memcmp(header->endianness, HEADER.endianness, sizeof HEADER.endianness))
+	{
+		cry("file %s has wrong endianness", name);
+		goto FAIL;
+	}
+
+	if(memcmp(header->config, HEADER.config, sizeof HEADER.config))
+	{
+		cry("file %s has wrong type configuration", name);
+		goto FAIL;
+	}
+
+	if(header->version != HEADER.version)
+	{
+		cry("file %s has wrong version - expected %lX, got %lX", name,
+			(unsigned long)HEADER.version, (unsigned long)header->version);
+		goto FAIL;
+	}
+
+	// TODO
+
+	return 1;
+
+FAIL:
+	if(bc)
+	{
+		bool status = m0_platform_munmap(bc, size);
+		assert(status == 1);
+	}
+
+	return 0;
 }

@@ -2,7 +2,8 @@ CC := clang
 CFLAGS := -std=c99 -Werror -Weverything
 
 CXX := clang++
-CXXFLAGS := -std=c++98 -Weverything -Wno-global-constructors
+CXXNOWARN := global-constructors variadic-macros
+CXXFLAGS := -std=c++98 -Weverything $(CXXNOWARN:%=-Wno-%)
 
 RM := rm -f
 PERL := perl
@@ -12,7 +13,7 @@ SHELL := sh
 SOURCES := interp.c mob.c ops.c platform.c
 OBJECTS := $(SOURCES:%.c=%.o)
 GEN_FILES := m0.h ops.c
-TESTS := sanity ops
+TESTS := sanity mob ops
 TEST_BINARIES := $(TESTS:%=t-%)
 TEST_SCRIPT := test.sh
 CHECKS := $(TESTS:%=%-test)

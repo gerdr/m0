@@ -2,8 +2,8 @@
 #define M0_H_
 
 #include <stdbool.h>
-#include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #define M0_VERSION __M0_VERSION__
 
@@ -82,10 +82,12 @@ struct m0_config_
 
 typedef m0_value m0_callframe[];
 
-typedef struct m0_mob_header_ m0_mob_header;
-struct m0_mob_header_
+typedef struct m0_mobheader_ m0_mobheader;
+struct m0_mobheader_
 {
-	uint8_t format[8];
+	uint8_t magic_number[3];
+	uint8_t endianness[2];
+	uint8_t config[3];
 	uint32_t version;
 };
 
@@ -131,7 +133,7 @@ struct m0_chunk_
 	const m0_segment *bytecode_segment;
 };
 
-union m0_aliasing_hack_
+union m0_aliasinghack_
 {
 	m0_object as_object;
 	m0_segment as_segment;
@@ -151,7 +153,7 @@ extern "C" {
 extern void *m0_platform_mmap_file_private(const char *name, size_t *size);
 extern bool m0_platform_munmap(void *block, size_t size);
 
-extern bool m0_mob_verify_header(const m0_mob_header *header);
+extern bool m0_mob_load(const char *name, FILE *err);
 
 extern bool m0_ops_run(m0_interp *interp, m0_callframe *cf);
 
