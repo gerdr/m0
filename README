@@ -1,0 +1,14 @@
+implementation of Parrot's M0 specification[1]
+changes to the spec will be documented once the design is more stable
+
+build instruction:
+
+  $ make
+  $ make test
+  $ make realclean
+
+Uses clang by default. To use gcc, change the make invocation to
+
+  $ make CC=gcc CFLAGS='-std=c99 -pedantic -Wall -Wextra'
+
+[1] https://github.com/parrot/parrot/blob/m0/docs/pdds/draft/pdd32_m0.pod
