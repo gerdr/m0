@@ -1,10 +1,14 @@
-M0_VERSION = 0x20120610
-M0_VALUE_TYPE = uint64_t
-M0_INT_TYPE = int64_t
-M0_UINT_TYPE = uint64_t
-M0_NUM_TYPE = double
-M0_OP_TYPE = uint32_t
-M0_OPS_FILE = m0.ops
-M0_IPD_FILE = m0.ipd
-M0_CFG_FILE = m0.cfg
-M0_REG_FILE = m0.reg
+export M0_VERSION = 0x20120610
+
+export M0_VALUE_TYPE = uint64_t
+export M0_INT_TYPE = int64_t
+export M0_UINT_TYPE = uint64_t
+export M0_NUM_TYPE = double
+export M0_OP_TYPE = uint32_t
+
+export M0_ENDIANNESS = 0
+
+export M0_OPS_FILE = m0.ops
+export M0_IPD_FILE = m0.ipd
+export M0_CFG_FILE = m0.cfg
+export M0_REG_FILE = m0.reg

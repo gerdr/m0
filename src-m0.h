@@ -12,8 +12,10 @@ enum
 	M0_OPSZ = sizeof (__M0_OP_TYPE__),
 	M0_INTSZ = sizeof (__M0_INT_TYPE__),
 	M0_NUMSZ = sizeof (__M0_NUM_TYPE__),
-	M0_VALUESZ = sizeof (__M0_VALUE_TYPE__),
-	M0_PTRSZ = sizeof (void *)
+	M0_REGSZ = sizeof (__M0_VALUE_TYPE__),
+	M0_PTRSZ = sizeof (void *),
+	M0_CFMAXSZ = 256 * M0_REGSZ,
+	M0_ENDIANNESS = __M0_ENDIANNESS__
 };
 
 enum
@@ -48,7 +50,7 @@ typedef union m0_value_ m0_value;
 union m0_value_
 {
 	__M0_VALUE_TYPE__ bits;
-	uint8_t bytes[M0_VALUESZ];
+	uint8_t bytes[M0_REGSZ];
 	m0_int as_int;
 	m0_uint as_uint;
 	m0_num as_num;
@@ -56,6 +58,7 @@ union m0_value_
 	const void *as_cptr;
 	ptrdiff_t as_word;
 	size_t as_uword;
+	uint32_t as_quad;
 };
 
 typedef m0_value m0_interp[M0_INTERPSZ];
@@ -120,6 +123,7 @@ union m0_aliasing_hack_
 
 typedef void m0_opfunc(m0_callframe *, uint8_t, uint8_t, uint8_t);
 
+extern const m0_interp M0_INTERP;
 extern m0_opfunc *const M0_OP_FUNCS[M0_OPCOUNT];
 
 extern void *m0_platform_mmap_file_private(const char *name, size_t *size);
