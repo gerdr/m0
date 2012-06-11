@@ -6,7 +6,7 @@
 
 int main(void)
 {
-	static const m0_value VALUE;
+	static const m0_value VALUE = { 0 };
 
 	assert(CHAR_BIT == 8);
 

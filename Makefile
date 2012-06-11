@@ -1,5 +1,9 @@
 CC := clang
 CFLAGS := -std=c99 -Werror -Weverything
+
+CXX := clang++
+CXXFLAGS := -std=c++98 -Weverything -Wno-global-constructors
+
 RM := rm -f
 PERL := perl
 ECHO := echo
@@ -11,14 +15,15 @@ GEN_FILES := m0.h ops.c
 TESTS := sanity ops
 TEST_BINARIES := $(TESTS:%=t-%)
 TEST_SCRIPT := test.sh
-CHECKS := $(TESTS:%=%-check)
-TARGETS := build test clean realclean gen genclean regen $(CHECKS) help
+CHECKS := $(TESTS:%=%-test)
+CPPCHECKS := $(SOURCES:%.c=cppcheck-%) $(TESTS:%=cppcheck-t-%)
+TARGETS := build test clean realclean gen genclean regen cppcheck help
 FILES_TO_CLEAN := $(OBJECTS) $(TEST_BINARIES)
 FILES_TO_REALCLEAN := $(GEN_FILES)
 
 include CONFIG
 
-.PHONY : $(TARGETS)
+.PHONY : $(TARGETS) $(CHECKS) $(CPPCHECKS)
 
 build : $(OBJECTS)
 
@@ -32,6 +37,11 @@ genclean :
 test : $(TEST_SCRIPT) $(TEST_BINARIES)
 	@$(SHELL) $^
 
+cppcheck : $(CPPCHECKS)
+
+$(CPPCHECKS) : cppcheck-% : %.c m0.h
+	-$(CXX) $(CXXFLAGS) -fsyntax-only -xc++ $<
+
 clean :
 	$(RM) $(FILES_TO_CLEAN)
 
@@ -41,11 +51,11 @@ realclean : clean
 help :
 	@$(ECHO) $(TARGETS)
 
-$(CHECKS) : %-check : t-%
+$(CHECKS) : %-test : t-%
 	./$<
 
 $(TEST_BINARIES) : % : %.c $(OBJECTS)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) -o $@ $(OBJECTS) $(CFLAGS) $<
 
 $(GEN_FILES) : % : gen-%.pl src-% gen.pl CONFIG m0.ops m0.ipd m0.reg m0.cfg
 	$(PERL) gen-$@.pl <src-$@ >$@

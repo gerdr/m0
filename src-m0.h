@@ -62,7 +62,24 @@ union m0_value_
 	uint32_t as_quad;
 };
 
-typedef struct { m0_value data[M0_INTERPSZ]; } m0_interp;
+typedef struct m0_interp_ m0_interp;
+struct m0_interp_
+{
+	m0_value data[M0_INTERPSZ];
+#ifdef __cplusplus
+	m0_interp_();
+#endif
+};
+
+typedef struct m0_config_ m0_config;
+struct m0_config_
+{
+	m0_value data[M0_CONFIGSZ];
+#ifdef __cplusplus
+	m0_config_();
+#endif
+};
+
 typedef m0_value m0_callframe[];
 
 typedef struct m0_mob_header_ m0_mob_header;
@@ -127,6 +144,10 @@ typedef void m0_opfunc(m0_callframe *, uint8_t, uint8_t, uint8_t);
 extern const m0_interp M0_INTERP;
 extern m0_opfunc *const M0_OP_FUNCS[M0_OPCOUNT];
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern void *m0_platform_mmap_file_private(const char *name, size_t *size);
 extern bool m0_platform_munmap(void *block, size_t size);
 
@@ -135,6 +156,10 @@ extern bool m0_mob_verify_header(const m0_mob_header *header);
 extern bool m0_ops_run(m0_interp *interp, m0_callframe *cf);
 
 extern m0_callframe *m0_interp_alloc_cf(m0_interp *interp, size_t size);
+
+#ifdef __cplusplus
+}
+#endif
 
 __M0_IPD_FUNCS__
 __M0_REG_FUNCS__

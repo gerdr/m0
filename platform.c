@@ -13,12 +13,13 @@ void *m0_platform_mmap_file_private(const char *name, size_t *size)
 {
 	FILE *file = NULL;
 	void *buffer = NULL;
+	long pos = -1;
 
 	file = fopen(name, "rb");
 	if(!file || fseek(file, 0, SEEK_END))
 		goto FAIL;
 
-	long pos = ftell(file);
+	pos = ftell(file);
 	if(pos < 0)
 		goto FAIL;
 

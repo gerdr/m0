@@ -51,13 +51,14 @@ sub m0_ipd_funcs {
 		chomp;
 		my ($name, $member, $type) = split /\s+/, $_, 3;
 		next unless defined $member;
+		my $cast = "($type)";
 		$type .= ' ' unless $type =~ /\*$/;
 		my $id = 'M0_IPD_'.uc $name;
 		$name = lc $name;
 		print <<EOS
 static inline ${type}m0_interp_$name(const m0_interp *interp)
 {
-	return interp->data[$id].as_$member;
+	return ${cast}interp->data[$id].as_$member;
 }
 
 EOS
@@ -72,13 +73,14 @@ sub m0_reg_funcs {
 		chomp;
 		my ($name, $member, $type) = split /\s+/, $_, 3;
 		next unless defined $member;
+		my $cast = "($type)";
 		$type .= ' ' unless $type =~ /\*$/;
 		my $id = "M0_REG_$name";
 		$name = lc $name;
 		print <<EOS
 static inline ${type}m0_reg_$name(const m0_callframe *cf)
 {
-	return (*cf)[$id].as_$member;
+	return $cast(*cf)[$id].as_$member;
 }
 
 static inline void m0_reg_set_$name(m0_callframe *cf, ${type}value)
