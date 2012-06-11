@@ -4,7 +4,6 @@ RM := rm -f
 PERL := perl
 ECHO := echo
 SHELL := sh
-TOUCH := touch
 
 SOURCES := interp.c mob.c ops.c platform.c
 OBJECTS := $(SOURCES:%.c=%.o)
