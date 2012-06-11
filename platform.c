@@ -20,7 +20,7 @@ void *m0_platform_mmap_file_private(const char *name, size_t *size)
 		goto FAIL;
 
 	pos = ftell(file);
-	if(pos < 0)
+	if(pos < 0 || fseek(file, 0, SEEK_SET))
 		goto FAIL;
 
 	buffer = malloc((size_t)pos);
