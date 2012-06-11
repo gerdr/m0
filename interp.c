@@ -1,6 +1,8 @@
 #define M0_SOURCE
 #include "m0.h"
 
+#include <stdlib.h>
+
 static const m0_value CONFIG[M0_CONFIGSZ] = {
 	[M0_CFG_M0V].as_quad = M0_VERSION,
 	[M0_CFG_REGSZ].as_uword = M0_REGSZ,
@@ -16,3 +18,16 @@ const m0_interp M0_INTERP = { {
 	[M0_IPD_OP_FUNCS].as_cptr = M0_OP_FUNCS,
 	[M0_IPD_CONFIG].as_cptr = CONFIG,
 } };
+
+m0_callframe *m0_interp_alloc_cf(m0_interp *interp, size_t size)
+{
+	assert(size >= M0_REGCOUNT);
+
+	m0_callframe *cf = calloc(size, M0_REGSZ);
+	if(!cf) return NULL;
+
+	m0_reg_set_cf(cf, cf);
+	m0_reg_set_interp(cf, interp);
+
+	return cf;
+}

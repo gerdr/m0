@@ -8,7 +8,7 @@ SHELL := sh
 SOURCES := interp.c mob.c ops.c platform.c
 OBJECTS := $(SOURCES:%.c=%.o)
 GEN_FILES := m0.h ops.c
-TESTS := sanity
+TESTS := sanity ops
 TEST_BINARIES := $(TESTS:%=t-%)
 TEST_SCRIPT := test.sh
 CHECKS := $(TESTS:%=%-check)

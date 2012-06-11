@@ -39,6 +39,7 @@ enum
 enum
 {
 	__M0_REG__
+	M0_REGCOUNT
 };
 
 typedef __M0_OP_TYPE__ m0_op;
@@ -132,6 +133,8 @@ extern bool m0_platform_munmap(void *block, size_t size);
 extern bool m0_mob_verify_header(const m0_mob_header *header);
 
 extern bool m0_ops_run(m0_interp *interp, m0_callframe *cf);
+
+extern m0_callframe *m0_interp_alloc_cf(m0_interp *interp, size_t size);
 
 __M0_IPD_FUNCS__
 __M0_REG_FUNCS__

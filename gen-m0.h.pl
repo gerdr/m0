@@ -81,6 +81,11 @@ static inline ${type}m0_reg_$name(const m0_callframe *cf)
 	return (*cf)[$id].as_$member;
 }
 
+static inline void m0_reg_set_$name(m0_callframe *cf, ${type}value)
+{
+	(*cf)[$id].as_$member = value;
+}
+
 EOS
 	}
 	close $fh;
