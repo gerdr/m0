@@ -14,7 +14,7 @@ SOURCES := $(subst ~,,$(filter-out $(GEN_FILES),$(wildcard src/*.c)))
 OBJECTS := $(filter-out main.o,$(SOURCES:src/%.c=%.o))
 TESTS := sanity mob ops
 TEST_SOURCES := $(TESTS:%=t/%.c)
-TEST_BINARIES := $(TESTS:%=t/%.exe)
+TEST_BINARIES := $(TESTS:%=t-%)
 BINARY := m0
 
 include Config
@@ -26,7 +26,7 @@ build : $(OBJECTS)
 exe : $(BINARY)
 
 test : $(TEST_BINARIES)
-	$(foreach TEST,$^,$(TEST);)
+	$(foreach TEST,$^,./$(TEST);)
 
 clean :
 	$(RM) $(OBJECTS) $(TEST_BINARIES)
@@ -51,5 +51,5 @@ $(filter src/%,$(GEN_FILES)) : src/% : gen/src/%.pl src/~%
 $(OBJECTS) : %.o : src/%.c m0.h
 	$(CC) -c -o $@ -I. $(CFLAGS) $<
 
-$(TEST_BINARIES) : %.exe : %.c $(OBJECTS)
+$(TEST_BINARIES) : t-% : t/%.c $(OBJECTS)
 	$(CC) -o $@ -I. $(OBJECTS) $(CFLAGS) $<

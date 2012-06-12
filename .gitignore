@@ -1,6 +1,15 @@
-# build files
-*.[oa]
-*.exe
+# object files
+/*.o
+
+# executables
+/m0
+/m0.exe
+/t-sanity
+/t-sanity.exe
+/t-mob
+/t-mob.exe
+/t-ops
+/t-ops.exe
 
 # generated files
 /m0.h
