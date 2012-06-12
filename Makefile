@@ -7,6 +7,7 @@ CXXFLAGS := -std=c++98 -Weverything $(CXXNOWARN:%=-Wno-%)
 
 RM := rm -f
 PERL := perl
+ECHO := echo
 
 SPECS := $(wildcard spec/*)
 GEN_FILES := $(patsubst gen/%.pl,%,$(wildcard gen/*.pl gen/src/*.pl))
@@ -19,11 +20,16 @@ BINARY := m0
 
 include Config
 
-.PHONY : build exe test clean realclean cppcheck
+.PHONY : build exe test clean realclean cppcheck gen list
 
 build : $(OBJECTS)
 
 exe : $(BINARY)
+
+gen : $(GEN_FILES)
+
+list :
+	@$(ECHO) $(SOURCES)
 
 test : $(TEST_BINARIES)
 	$(foreach TEST,$^,./$(TEST);)
