@@ -76,6 +76,7 @@ static bool verify_header(struct loader *loader)
 	{
 		cry(loader, "file <%s> has wrong version - expected %u, got %u",
 			loader->name, *HEADER.version, *header->version);
+
 		return 0;
 	}
 
@@ -96,10 +97,49 @@ static bool verify_header(struct loader *loader)
 
 static bool load_chunks(struct loader *loader)
 {
-	// TODO
-	assert(!&"NOT IMPLEMENTED");
-	(void)loader;
-	return 0;
+	const m0_segment *dir = (m0_segment *)read(loader, sizeof *dir);
+	if(!dir) return 0;
+
+	// TODO: verify id - need to come up with a general scheme
+
+	if(!m0_interp_reserve_chunks(loader->interp, dir->entry_count))
+	{
+		cry(loader, "failed to reserve %u chunks for file <%s>",
+			(unsigned)dir->entry_count, loader->name);
+
+		return 0;
+	}
+
+	for(size_t i = 0; i < dir->entry_count; ++i)
+	{
+		const m0_direntry *entry = (m0_direntry *)read(loader, sizeof *entry);
+		if(!entry) return 0;
+			// no need to rollback reserved chunks:
+			// the worst that can happen are superfluous realloc() calls
+
+		uint32_t *blocks = (uint32_t *)loader->mapping;
+
+		if(entry->const_offset % sizeof *blocks ||
+			entry->meta_offset % sizeof *blocks ||
+			entry->code_offset % sizeof *blocks)
+		{
+			cry(loader, "illegal offsets in file <%s>", loader->name);
+			return 0;
+		}
+
+		m0_interp_push_reserved_chunk(loader->interp,
+			(m0_segment *)(blocks + entry->const_offset / sizeof *blocks),
+			(m0_segment *)(blocks + entry->meta_offset / sizeof *blocks),
+			(m0_segment *)(blocks + entry->code_offset / sizeof *blocks));
+
+		// TODO: verify segments
+
+		assert(!&"TODO: skip name bytes");
+		// const m0_string *name = (m0_string *)entry->blocks;
+		// TODO: figure out CHUNK_INFO - do we put the name there?
+	}
+
+	return 1;
 }
 
 bool m0_mob_load(m0_interp *interp, const char *name, FILE *err)

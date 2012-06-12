@@ -136,7 +136,6 @@ struct m0_direntry_
 typedef struct m0_chunk_ m0_chunk;
 struct m0_chunk_
 {
-	const m0_symbol *name;
 	const m0_segment *constants;
 	const m0_segment *metadata;
 	const m0_segment *bytecode;
@@ -170,9 +169,9 @@ extern bool m0_ops_run(m0_interp *interp, m0_callframe *cf);
 extern m0_callframe *m0_interp_alloc_cf(m0_interp *interp, size_t size);
 extern bool m0_interp_reserve_chunks(m0_interp *interp, size_t count);
 extern void m0_interp_push_reserved_chunk(m0_interp *interp,
-	const m0_symbol *name, const m0_segment *constants,
-	const m0_segment *metadata, const m0_segment *bytecode);
-extern bool m0_interp_push_chunk(m0_interp *interp, const m0_symbol *name,
+	const m0_segment *constants, const m0_segment *metadata,
+	const m0_segment *bytecode);
+extern bool m0_interp_push_chunk(m0_interp *interp,
 	const m0_segment *constants, const m0_segment *metadata,
 	const m0_segment *bytecode);
 

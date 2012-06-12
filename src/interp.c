@@ -75,13 +75,12 @@ bool m0_interp_reserve_chunks(m0_interp *interp, size_t count)
 }
 
 void m0_interp_push_reserved_chunk(m0_interp *interp,
-	const m0_symbol *name, const m0_segment *constants,
-	const m0_segment *metadata, const m0_segment *bytecode)
+	const m0_segment *constants, const m0_segment *metadata,
+	const m0_segment *bytecode)
 {
 	size_t count = m0_interp_chunk_count(interp);
 	m0_chunk *chunk = m0_interp_chunks(interp) + count;
 
-	chunk->name = name;
 	chunk->constants = constants;
 	chunk->metadata = metadata;
 	chunk->bytecode = bytecode;
@@ -89,7 +88,7 @@ void m0_interp_push_reserved_chunk(m0_interp *interp,
 	m0_interp_set_chunk_count(interp, count + 1);
 }
 
-bool m0_interp_push_chunk(m0_interp *interp, const m0_symbol *name,
+bool m0_interp_push_chunk(m0_interp *interp,
 	const m0_segment *constants, const m0_segment *metadata,
 	const m0_segment *bytecode)
 {
@@ -104,7 +103,6 @@ bool m0_interp_push_chunk(m0_interp *interp, const m0_symbol *name,
 		m0_interp_set_chunks(interp, chunks);
 	}
 
-	chunks[count].name = name;
 	chunks[count].constants = constants;
 	chunks[count].metadata = metadata;
 	chunks[count].bytecode = bytecode;
