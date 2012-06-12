@@ -122,6 +122,17 @@ struct m0_segment_
 	uint32_t blocks[];
 };
 
+typedef struct m0_direntry_ m0_direntry;
+struct m0_direntry_
+{
+	uint32_t id;
+	uint32_t byte_size;
+	uint32_t const_offset;
+	uint32_t meta_offset;
+	uint32_t code_offset;
+	uint32_t blocks[];
+};
+
 typedef struct m0_chunk_ m0_chunk;
 struct m0_chunk_
 {
@@ -133,10 +144,11 @@ struct m0_chunk_
 
 union m0_aliasinghack_
 {
-	m0_object as_object;
-	m0_segment as_segment;
-	m0_string as_string;
-	m0_symbol as_symbol;
+	m0_object object_;
+	m0_segment segment_;
+	m0_string string_;
+	m0_symbol symbol_;
+	m0_direntry direntry_;
 };
 
 typedef void m0_opfunc(m0_callframe *, uint8_t, uint8_t, uint8_t);

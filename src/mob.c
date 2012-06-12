@@ -3,10 +3,16 @@
 
 #include <string.h>
 
-#define cry(FORMAT, ...) do if(err) { \
-	fprintf(err, "m0: " FORMAT "\n", __VA_ARGS__); \
-	int status_ = fflush(err); assert(status_ == 0); \
-} while(0)
+struct loader
+{
+	m0_interp *interp;
+	const char *name;
+	FILE *err;
+	void *mapping;
+	size_t size;
+	uint32_t *cursor;
+	size_t remaining;
+};
 
 static const m0_mobheader HEADER = {
 	{ 'M', 0, 'B' },
@@ -15,61 +21,97 @@ static const m0_mobheader HEADER = {
 	0
 };
 
-bool m0_mob_load(m0_interp *interp, const char *name, FILE *err)
+#define cry(LOADER, FORMAT, ...) do { \
+	struct loader *loader_ =  LOADER; \
+	if(!loader_->err) break; \
+	fprintf(loader_->err, "m0: " FORMAT "\n", __VA_ARGS__); \
+	int status_ = fflush(loader_->err); assert(status_ == 0); \
+} while(0)
+
+static inline void *read(struct loader *loader, size_t size)
 {
-	void *bc = NULL;
-	size_t size = 0;
-	const m0_mobheader *header = NULL;
-
-	bc = m0_platform_mmap_file_private(name, &size);
-	if(!bc)
+	assert(size % sizeof *loader->cursor == 0);
+	if(loader->remaining < size)
 	{
-		cry("failed to mmap file <%s>", name);
-		goto FAIL;
+		cry(loader, "premature end of file <%s>", loader->name);
+		return NULL;
 	}
 
-	if(size < sizeof (m0_mobheader) + sizeof (m0_segment))
+	void *mark = loader->cursor;
+	loader->remaining -= size;
+	loader->cursor += size / sizeof *loader->cursor;
+	return mark;
+}
+
+static bool mmap_file(struct loader *loader)
+{
+	size_t size;
+	void *mapping = m0_platform_mmap_file_private(loader->name, &size);
+	if(!mapping)
 	{
-		cry("file <%s> is too small to be a bytecode file", name);
-		goto FAIL;
+		cry(loader, "failed to mmap file <%s>", loader->name);
+		return 0;
 	}
 
-	header = (m0_mobheader *)bc;
+	loader->mapping = mapping;
+	loader->size = size;
+	loader->cursor = (uint32_t *)loader->mapping;
+	loader->remaining = size;
+
+	return 1;
+}
+
+static bool verify_header(struct loader *loader)
+{
+	const m0_mobheader *header = (m0_mobheader *)read(loader, sizeof *header);
+	if(!header) return 0;
 
 	if(memcmp(header->magic, HEADER.magic, sizeof HEADER.magic))
 	{
-		cry("file <%s> has wrong magic number", name);
-		goto FAIL;
+		cry(loader, "file <%s> has wrong magic number", loader->name);
+		return 0;
 	}
 
 	if(memcmp(header->version, HEADER.version, sizeof HEADER.version))
 	{
-		cry("file <%s> has wrong version - expected %u, got %u",
-			name, *HEADER.version, *header->version);
-		goto FAIL;
+		cry(loader, "file <%s> has wrong version - expected %u, got %u",
+			loader->name, *HEADER.version, *header->version);
+		return 0;
 	}
 
 	if(memcmp(header->config, HEADER.config, sizeof HEADER.config))
 	{
-		cry("file <%s> has wrong type configuration", name);
-		goto FAIL;
+		cry(loader, "file <%s> has wrong type configuration", loader->name);
+		return 0;
 	}
 
-	if(size != header->size)
+	if(header->size != loader->size)
 	{
-		cry("file <%s> has incorrect size", name);
-		goto FAIL;
+		cry(loader, "file <%s> has incorrect size", loader->name);
+		return 0;
 	}
+
+	return 1;
+}
+
+bool m0_mob_load(m0_interp *interp, const char *name, FILE *err)
+{
+	struct loader loader = { interp, name, err, NULL, 0, NULL, 0 };
+
+	if(!mmap_file(&loader))
+		goto FAIL;
+
+	if(!verify_header(&loader))
+		goto FAIL;
 
 	// TODO
-	(void)interp;
 
 	return 1;
 
 FAIL:
-	if(bc)
+	if(loader.mapping)
 	{
-		bool status = m0_platform_munmap(bc, size);
+		bool status = m0_platform_munmap(loader.mapping, loader.size);
 		assert(status == 1);
 	}
 
