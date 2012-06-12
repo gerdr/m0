@@ -151,7 +151,7 @@ extern "C" {
 extern void *m0_platform_mmap_file_private(const char *name, size_t *size);
 extern bool m0_platform_munmap(void *block, size_t size);
 
-extern bool m0_mob_load(const char *name, FILE *err);
+extern bool m0_mob_load(m0_interp *interp, const char *name, FILE *err);
 
 extern bool m0_ops_run(m0_interp *interp, m0_callframe *cf);
 

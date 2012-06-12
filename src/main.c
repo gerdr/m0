@@ -12,11 +12,13 @@ int main(int argc, char *argv[])
 		return EXIT_SUCCESS;
 	}
 
+	m0_interp interp = M0_INTERP;
+
 	int i = 1;
 
 	for(; i < argc; ++i)
 	{
-		bool loaded = m0_mob_load(argv[i], stderr);
+		bool loaded = m0_mob_load(&interp, argv[i], stderr);
 		if(!loaded) goto FAIL;
 
 		if(strcmp(argv[i], "--") == 0)

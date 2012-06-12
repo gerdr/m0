@@ -1,14 +1,40 @@
-implementation of Parrot's M0 specification[1]
-changes to the spec will be documented once the design is more stable
+An implementation of Parrot's M0 specification[1]
+Changes to the spec will be documented once the design is more stable
 
-build instruction:
+Build instruction:
 
   $ make
   $ make test
+  $ make exe
+
+Cleanup instructions:
+
+  $ make clean
   $ make realclean
 
-Uses clang by default. To use gcc, change the make invocation to
+Uses clang by default - to use gcc, change all make invocations to
 
-  $ make CC=gcc CFLAGS='-std=c99 -pedantic -Wall -Wextra'
+  $ make CC=gcc CFLAGS=-std=c99
+
+If you want to compile as C++, try
+
+  $ make CC=clang++ CFLAGS=-xc++
+
+The code doesn't compile warning-free with gcc 4.5, which is probably related
+to a compiler bug fixed in 4.6 (not verified); it doesn't compile at all with
+g++ 4.5.
+
+Compiling with Visual Studio needs GNU make and perl; use
+
+  $ make gen
+
+to generate necessary files and
+
+  $ make list
+
+to get the list of source files which go into the executable.
+
+Compiling as C++ is supposed to work with Visual Studio - please file a ticket
+if it doesn't.
 
 [1] https://github.com/parrot/parrot/blob/m0/docs/pdds/draft/pdd32_m0.pod

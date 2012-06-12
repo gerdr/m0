@@ -12,7 +12,7 @@ ECHO := echo
 SPECS := $(wildcard spec/*)
 GEN_FILES := $(patsubst gen/%.pl,%,$(wildcard gen/*.pl gen/src/*.pl))
 SOURCES := $(subst ~,,$(filter-out $(GEN_FILES),$(wildcard src/*.c)))
-OBJECTS := $(filter-out main.o,$(SOURCES:src/%.c=%.o))
+OBJECTS := $(SOURCES:src/%.c=%.o)
 TESTS := sanity mob ops
 TEST_SOURCES := $(TESTS:%=t/%.c)
 TEST_BINARIES := $(TESTS:%=t-%)
@@ -43,8 +43,8 @@ realclean : clean
 cppcheck : | $(GEN_FILES)
 	$(CXX) -fsyntax-only -I. $(CXXFLAGS) -xc++ $(SOURCES) $(TEST_SOURCES)
 
-$(BINARY) : src/main.c $(OBJECTS)
-	$(CC) -o $@ -I. $(OBJECTS) $(CFLAGS) $<
+$(BINARY) : $(OBJECTS)
+	$(CC) -o $@ -I. $^
 
 $(GEN_FILES) : Config $(SPECS)
 
@@ -57,5 +57,6 @@ $(filter src/%,$(GEN_FILES)) : src/% : gen/src/%.pl src/~%
 $(OBJECTS) : %.o : src/%.c m0.h
 	$(CC) -c -o $@ -I. $(CFLAGS) $<
 
+$(TEST_BINARIES) : OBJECTS := $(filter-out main.o,$(OBJECTS))
 $(TEST_BINARIES) : t-% : t/%.c $(OBJECTS)
 	$(CC) -o $@ -I. $(OBJECTS) $(CFLAGS) $<

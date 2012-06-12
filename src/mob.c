@@ -15,7 +15,7 @@ static const m0_mobheader HEADER = {
 	0
 };
 
-bool m0_mob_load(const char *name, FILE *err)
+bool m0_mob_load(m0_interp *interp, const char *name, FILE *err)
 {
 	void *bc = NULL;
 	size_t size = 0;
@@ -62,6 +62,7 @@ bool m0_mob_load(const char *name, FILE *err)
 	}
 
 	// TODO
+	(void)interp;
 
 	return 1;
 

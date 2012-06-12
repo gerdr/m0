@@ -13,13 +13,15 @@
 
 int main(void)
 {
+	m0_interp interp = M0_INTERP;
+
 	FILE *msg = fopen("t/mob/messages", "rb");
 	assert(msg != NULL);
 
 	FILE *err = tmpfile();
 	assert(err != NULL);
 
-	assert(m0_mob_load("t/mob/too-small.m0b", err) == 0);
+	assert(m0_mob_load(&interp, "t/mob/too-small.m0b", err) == 0);
 	assert_msg(err, msg);
 
 	return 0;
