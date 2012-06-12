@@ -8,15 +8,13 @@
 enum
 {
 	M0_VERSION = __M0_VERSION__,
-
+	M0_ENDIANNESS = __M0_ENDIANNESS__,
 	M0_OPSZ = sizeof (__M0_OP_TYPE__),
 	M0_INTSZ = sizeof (__M0_INT_TYPE__),
 	M0_NUMSZ = sizeof (__M0_NUM_TYPE__),
 	M0_REGSZ = sizeof (__M0_VALUE_TYPE__),
 	M0_PTRSZ = sizeof (void *),
-	M0_CFMAXSZ = 256 * M0_REGSZ,
-
-	M0_ENDIANNESS = __M0_ENDIANNESS__
+	M0_CFMAXSZ = 256 * M0_REGSZ
 };
 
 enum
@@ -60,7 +58,6 @@ union m0_value_
 	const void *as_cptr;
 	ptrdiff_t as_word;
 	size_t as_uword;
-	uint32_t as_quad;
 };
 
 typedef struct m0_interp_ m0_interp;

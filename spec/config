@@ -1,8 +1,8 @@
-M0V			quad	uint32_t
+M0V			uint	m0_uint
+ENDIANNESS	uint	m0_uint
 REGSZ		uword	size_t
 CFMAXSZ		uword	size_t
 INTSZ		uword	size_t
 NUMSZ		uword	size_t
 OPSZ		uword	size_t
 PTRSZ		uword	size_t
-ENDIANNESS	uint	m0_uint
