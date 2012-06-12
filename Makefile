@@ -30,7 +30,7 @@ clean :
 realclean : clean
 	$(RM) $(GEN_FILES)
 
-cppcheck :
+cppcheck : | $(GEN_FILES)
 	$(CXX) -fsyntax-only -I. $(CXXFLAGS) -xc++ $(SOURCES)
 
 $(GEN_FILES) : Config $(SPECS)
