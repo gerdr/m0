@@ -24,13 +24,13 @@ bool m0_mob_load(const char *name, FILE *err)
 	bc = m0_platform_mmap_file_private(name, &size);
 	if(!bc)
 	{
-		cry("failed to mmap file %s", name);
+		cry("failed to mmap file <%s>", name);
 		goto FAIL;
 	}
 
 	if(size < sizeof (m0_mobheader) + sizeof (m0_segment))
 	{
-		cry("file %s is too small to be a bytecode file", name);
+		cry("file <%s> is too small to be a bytecode file", name);
 		goto FAIL;
 	}
 
@@ -38,20 +38,20 @@ bool m0_mob_load(const char *name, FILE *err)
 
 	if(memcmp(header->magic, HEADER.magic, sizeof HEADER.magic))
 	{
-		cry("file %s has wrong magic number", name);
+		cry("file <%s> has wrong magic number", name);
 		goto FAIL;
 	}
 
 	if(memcmp(header->version, HEADER.version, sizeof HEADER.version))
 	{
-		cry("file %s has wrong version - expected %X, got %X",
+		cry("file <%s> has wrong version - expected %u, got %u",
 			name, *HEADER.version, *header->version);
 		goto FAIL;
 	}
 
 	if(memcmp(header->config, HEADER.config, sizeof HEADER.config))
 	{
-		cry("file %s has wrong type configuration", name);
+		cry("file <%s> has wrong type configuration", name);
 		goto FAIL;
 	}
 
