@@ -7,59 +7,42 @@ CXXFLAGS := -std=c++98 -Weverything $(CXXNOWARN:%=-Wno-%)
 
 RM := rm -f
 PERL := perl
-ECHO := echo
-SHELL := sh
 
-SOURCES := interp.c mob.c ops.c platform.c
+SPECS := $(wildcard spec/*)
+GEN_FILES := $(patsubst gen/%.pl,%,$(wildcard gen/*.pl gen/src/*.pl))
+SOURCES := $(subst ~,,$(filter-out $(GEN_FILES),$(wildcard src/*.c)))
 OBJECTS := $(SOURCES:%.c=%.o)
-GEN_FILES := m0.h ops.c
 TESTS := sanity mob ops
-TEST_BINARIES := $(TESTS:%=t-%)
-TEST_SCRIPT := test.sh
-CHECKS := $(TESTS:%=%-test)
-CPPCHECKS := $(SOURCES:%.c=cppcheck-%) $(TESTS:%=cppcheck-t-%)
-TARGETS := build test clean realclean gen genclean regen cppcheck help
-FILES_TO_CLEAN := $(OBJECTS) $(TEST_BINARIES)
-FILES_TO_REALCLEAN := $(GEN_FILES)
+TEST_BINARIES := $(TESTS:%=t/%.exe)
 
-include CONFIG
+include Config
 
-.PHONY : $(TARGETS) $(CHECKS) $(CPPCHECKS)
+.PHONY : build test clean realclean cppcheck
 
 build : $(OBJECTS)
 
-gen : $(GEN_FILES)
-
-regen : genclean gen
-
-genclean :
-	$(RM) $(GEN_FILES)
-
-test : $(TEST_SCRIPT) $(TEST_BINARIES)
-	@$(SHELL) $^
-
-cppcheck : $(CPPCHECKS)
-
-$(CPPCHECKS) : cppcheck-% : %.c m0.h
-	-$(CXX) $(CXXFLAGS) -fsyntax-only -xc++ $<
+test : $(TEST_BINARIES)
+	$(foreach TEST,$^,$(TEST);)
 
 clean :
-	$(RM) $(FILES_TO_CLEAN)
+	$(RM) $(OBJECTS) $(TEST_BINARIES)
 
-realclean : FILES_TO_CLEAN += $(FILES_TO_REALCLEAN)
 realclean : clean
+	$(RM) $(GEN_FILES)
 
-help :
-	@$(ECHO) $(TARGETS)
+cppcheck :
+	$(CXX) -fsyntax-only -I. $(CXXFLAGS) -xc++ $(SOURCES)
 
-$(CHECKS) : %-test : t-%
-	./$<
+$(GEN_FILES) : Config $(SPECS)
 
-$(TEST_BINARIES) : % : %.c $(OBJECTS)
-	$(CC) -o $@ $(OBJECTS) $(CFLAGS) $<
+$(filter-out src/%,$(GEN_FILES)) : % : gen/%.pl ~%
+	$(PERL) $< <~$@ >$@
 
-$(GEN_FILES) : % : gen-%.pl src-% gen.pl CONFIG m0.ops m0.ipd m0.reg m0.cfg
-	$(PERL) gen-$@.pl <src-$@ >$@
+$(filter src/%,$(GEN_FILES)) : src/% : gen/src/%.pl src/~%
+	$(PERL) $< <src/~$(notdir $@) >$@
 
 $(OBJECTS) : %.o : %.c m0.h
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) -c -o $@ -I. $(CFLAGS) $<
+
+$(TEST_BINARIES) : %.exe : %.c $(OBJECTS)
+	$(CC) -o $@ -I. $(OBJECTS) $(CFLAGS) $<

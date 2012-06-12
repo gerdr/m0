@@ -8,7 +8,7 @@ export M0_OP_TYPE = uint32_t
 
 export M0_ENDIANNESS = 0
 
-export M0_OPS_FILE = m0.ops
-export M0_IPD_FILE = m0.ipd
-export M0_CFG_FILE = m0.cfg
-export M0_REG_FILE = m0.reg
+export M0_OPS_FILE = spec/ops
+export M0_IPD_FILE = spec/interp
+export M0_CFG_FILE = spec/config
+export M0_REG_FILE = spec/registers

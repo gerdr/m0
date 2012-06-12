@@ -3,10 +3,5 @@
 *.exe
 
 # generated files
-m0.h
-ops.c
-
-# test binaries
-t-sanity
-t-mob
-t-ops
+/m0.h
+/src/ops.c

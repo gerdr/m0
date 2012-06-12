@@ -1,1 +1,0 @@
-m0: file t-mob-too-small.m0b is too small to be a bytecode file
