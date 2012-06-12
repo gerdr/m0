@@ -1,5 +1,45 @@
 An implementation of Parrot's M0 specification[1]
-Changes to the spec will be documented once the design is more stable
+[1] https://github.com/parrot/parrot/blob/m0/docs/pdds/draft/pdd32_m0.pod
+
+
+Changes to the spec will be properly documented once the design is more
+stable. Some preliminary pointers:
+
+  - use an m0b header without padding and add a field for the file size
+
+  - add offsets for metadata and bytecode segments to directory entries;
+    this means the chunk can be constructed immediately when reading
+    the entry without having to parse the rest of the file
+
+  - add an encoding field to directory entries so we have the same format
+    as m0 strings and can use the mmap'd data directly
+
+  - int and num register sizes are configurable, but ops are always 32-bit,
+    which avoids unreasonable comlexity
+
+
+Some things which haven't been implemented yet, but should be kept in mind:
+
+  - alignment has to be taken into account when writing entries into the
+    constants table: unaligned access carries a performance penalty on
+    most architectures (if it's even possible at all); eg x86 provides
+    atomic access to doubles only if they are 8-byte aligned
+
+  - typed registers are a necessity for efficient JIT compilation;
+    each callframe allocation should therefore be accompanied by metadata
+    which lists the register types (which can also be used by the gc, which
+    needs to detect PMC registers); the fixed type mapping by register
+    number isn't flexible enough and doesn't play well with variably-sized
+    callframes; the interpreter however will allocate registers of uniform
+    size to avoid complexity and at the cost of a bit of wasted space in
+    case of register types with different sizes
+
+  - data structures will be dense (no linked lists to avoid chasing pointers
+    though memory) and probably power-of-two sized, which hopefully results
+    in a reasonable allocation strategy for many access patterns and again
+    at the cost of some space; this also means that there's no need to keep
+    track of both load and size (resize when the load hits a power of two)
+
 
 Build instruction:
 
@@ -11,6 +51,7 @@ Cleanup instructions:
 
   $ make clean
   $ make realclean
+
 
 Uses clang by default - to use gcc, change all make invocations to
 
@@ -24,6 +65,7 @@ The code doesn't compile warning-free with gcc 4.5, which is probably related
 to a compiler bug fixed in 4.6 (not verified); it doesn't compile at all with
 g++ 4.5.
 
+
 Compiling with Visual Studio needs GNU make and perl; use
 
   $ make gen
@@ -36,5 +78,3 @@ to get the list of source files which go into the executable.
 
 Compiling as C++ is supposed to work with Visual Studio - please file a ticket
 if it doesn't.
-
-[1] https://github.com/parrot/parrot/blob/m0/docs/pdds/draft/pdd32_m0.pod
