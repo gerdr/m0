@@ -86,6 +86,7 @@ struct m0_mobheader_
 	uint8_t magic[3];
 	uint8_t version[1];
 	uint8_t config[4];
+	uint32_t size;
 };
 
 typedef struct m0_object_ m0_object;

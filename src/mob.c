@@ -11,7 +11,8 @@
 static const m0_mobheader HEADER = {
 	{ 'M', 0, 'B' },
 	{ M0_VERSION },
-	{ M0_ENDIANNESS, M0_OPSZ, M0_INTSZ, M0_NUMSZ }
+	{ M0_ENDIANNESS, M0_OPSZ, M0_INTSZ, M0_NUMSZ },
+	0
 };
 
 bool m0_mob_load(const char *name, FILE *err)
@@ -51,6 +52,12 @@ bool m0_mob_load(const char *name, FILE *err)
 	if(memcmp(header->config, HEADER.config, sizeof HEADER.config))
 	{
 		cry("file %s has wrong type configuration", name);
+		goto FAIL;
+	}
+
+	if(size != header->size)
+	{
+		cry("file <%s> has incorrect size", name);
 		goto FAIL;
 	}
 
