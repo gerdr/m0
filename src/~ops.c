@@ -337,8 +337,8 @@ bool m0_ops_run(m0_interp *interp, m0_callframe *cf)
 	for(;; cf = m0_reg_cf(cf))
 	{
 		const m0_chunk *chunk = m0_interp_chunks(interp) + m0_reg_chunk(cf);
-		const m0_op *ops = chunk->bytecode_segment->blocks;
-		size_t opcount = chunk->bytecode_segment->entry_count;
+		const m0_op *ops = chunk->bytecode->blocks;
+		size_t opcount = chunk->bytecode->entry_count;
 		size_t pc = m0_reg_pc(cf);
 
 		if(pc >= opcount)

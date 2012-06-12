@@ -61,6 +61,11 @@ static inline ${type}m0_interp_$name(const m0_interp *interp)
 	return ${cast}interp->data[$id].as_$member;
 }
 
+static inline void m0_interp_set_$name(m0_interp *interp, ${type}value)
+{
+	interp->data[$id].as_$member = value;
+}
+
 EOS
 	}
 	close $fh;

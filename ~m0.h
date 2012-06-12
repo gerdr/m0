@@ -137,9 +137,9 @@ typedef struct m0_chunk_ m0_chunk;
 struct m0_chunk_
 {
 	const m0_symbol *name;
-	const m0_segment *constants_segment;
-	const m0_segment *metadata_segment;
-	const m0_segment *bytecode_segment;
+	const m0_segment *constants;
+	const m0_segment *metadata;
+	const m0_segment *bytecode;
 };
 
 union m0_aliasinghack_
@@ -168,6 +168,14 @@ extern bool m0_mob_load(m0_interp *interp, const char *name, FILE *err);
 extern bool m0_ops_run(m0_interp *interp, m0_callframe *cf);
 
 extern m0_callframe *m0_interp_alloc_cf(m0_interp *interp, size_t size);
+extern bool m0_interp_reserve_chunks(m0_interp *interp, size_t count);
+extern void m0_interp_push_reserved_chunk(m0_interp *interp,
+	const m0_symbol *name, const m0_segment *constants,
+	const m0_segment *metadata, const m0_segment *bytecode);
+extern bool m0_interp_push_chunk(m0_interp *interp, const m0_symbol *name,
+	const m0_segment *constants, const m0_segment *metadata,
+	const m0_segment *bytecode);
+
 
 #ifdef __cplusplus
 }
@@ -176,7 +184,25 @@ extern m0_callframe *m0_interp_alloc_cf(m0_interp *interp, size_t size);
 __M0_IPD_FUNCS__
 __M0_REG_FUNCS__
 #ifdef M0_SOURCE
+
 #include <assert.h>
+#include <limits.h>
+
+static inline size_t is_pow2z(size_t size)
+{
+	return (size & (size - 1)) == 0;
+}
+
+static inline size_t next_greater_pow2(size_t size)
+{
+	enum { SIZE_BIT = CHAR_BIT * sizeof (size_t) };
+
+	for(unsigned exp = 0; (1 << exp) < SIZE_BIT; ++exp)
+		size |= size >> (1 << exp);
+
+	return ++size;
+}
+
 #endif
 
 #endif

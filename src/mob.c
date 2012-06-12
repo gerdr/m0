@@ -94,6 +94,14 @@ static bool verify_header(struct loader *loader)
 	return 1;
 }
 
+static bool load_chunks(struct loader *loader)
+{
+	// TODO
+	assert(!&"NOT IMPLEMENTED");
+	(void)loader;
+	return 0;
+}
+
 bool m0_mob_load(m0_interp *interp, const char *name, FILE *err)
 {
 	struct loader loader = { interp, name, err, NULL, 0, NULL, 0 };
@@ -104,7 +112,8 @@ bool m0_mob_load(m0_interp *interp, const char *name, FILE *err)
 	if(!verify_header(&loader))
 		goto FAIL;
 
-	// TODO
+	if(!load_chunks(&loader))
+		goto FAIL;
 
 	return 1;
 

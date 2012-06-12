@@ -1,3 +1,4 @@
+#define M0_SOURCE
 #include "m0.h"
 
 #undef NDEBUG

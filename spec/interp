@@ -1,8 +1,9 @@
 OP_FUNCS	cptr	m0_opfunc *const *
-CHUNKS		cptr	const m0_chunk *
-CHUNK_INFO	cptr	const void *
-CHUNK_MAP	cptr	const void *
-CALL_FRAMES	cptr	const void *
+CHUNKS		ptr		m0_chunk *
+CHUNK_COUNT	uword	size_t
+CHUNK_INFO	ptr		void *
+CHUNK_MAP	ptr		void *
+CALL_FRAMES	ptr		void *
 CONFIG		cptr	const m0_value *
 ARGC		uint	m0_uint
 ARGV		cptr	const void *

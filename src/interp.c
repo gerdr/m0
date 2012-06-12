@@ -56,3 +56,60 @@ m0_callframe *m0_interp_alloc_cf(m0_interp *interp, size_t size)
 
 	return cf;
 }
+
+bool m0_interp_reserve_chunks(m0_interp *interp, size_t count)
+{
+	size_t load = m0_interp_chunk_count(interp) + count;
+	assert(load >= count);
+
+	size_t size = next_greater_pow2(load);
+	assert(size != 0);
+
+	m0_chunk *chunks = m0_interp_chunks(interp);
+	chunks = (m0_chunk *)realloc(chunks, size * sizeof *chunks);
+	if(!chunks) return 0;
+
+	m0_interp_set_chunks(interp, chunks);
+
+	return 1;
+}
+
+void m0_interp_push_reserved_chunk(m0_interp *interp,
+	const m0_symbol *name, const m0_segment *constants,
+	const m0_segment *metadata, const m0_segment *bytecode)
+{
+	size_t count = m0_interp_chunk_count(interp);
+	m0_chunk *chunk = m0_interp_chunks(interp) + count;
+
+	chunk->name = name;
+	chunk->constants = constants;
+	chunk->metadata = metadata;
+	chunk->bytecode = bytecode;
+
+	m0_interp_set_chunk_count(interp, count + 1);
+}
+
+bool m0_interp_push_chunk(m0_interp *interp, const m0_symbol *name,
+	const m0_segment *constants, const m0_segment *metadata,
+	const m0_segment *bytecode)
+{
+	size_t count = m0_interp_chunk_count(interp);
+	m0_chunk *chunks = m0_interp_chunks(interp);
+
+	if(is_pow2z(count + 1))
+	{
+		chunks = (m0_chunk *)realloc(chunks, (count + 1) * 2 * sizeof *chunks);
+		if(!chunks) return 0;
+
+		m0_interp_set_chunks(interp, chunks);
+	}
+
+	chunks[count].name = name;
+	chunks[count].constants = constants;
+	chunks[count].metadata = metadata;
+	chunks[count].bytecode = bytecode;
+
+	m0_interp_set_chunk_count(interp, count + 1);
+
+	return 1;
+}
