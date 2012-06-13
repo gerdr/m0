@@ -110,6 +110,8 @@ static bool load_chunks(struct loader *loader)
 		return 0;
 	}
 
+	// TODO: enlarge chunk map if overloaded
+
 	for(size_t i = 0; i < dir->entry_count; ++i)
 	{
 		const m0_direntry *entry = (m0_direntry *)read(loader, sizeof *entry);
@@ -128,15 +130,16 @@ static bool load_chunks(struct loader *loader)
 		}
 
 		m0_interp_push_reserved_chunk(loader->interp,
+			(m0_string *)loader->cursor,
 			(m0_segment *)(blocks + entry->const_offset / sizeof *blocks),
 			(m0_segment *)(blocks + entry->meta_offset / sizeof *blocks),
 			(m0_segment *)(blocks + entry->code_offset / sizeof *blocks));
 
 		// TODO: verify segments
+		// TODO: add chunk to chunk map
+		// TODO: skip name bytes
 
-		assert(!&"TODO: skip name bytes");
-		// const m0_string *name = (m0_string *)entry->blocks;
-		// TODO: figure out CHUNK_INFO - do we put the name there?
+		assert(!&"TODO");
 	}
 
 	return 1;
