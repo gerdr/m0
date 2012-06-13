@@ -1,2 +1,4 @@
+m0: failed to mmap file <t/mob/invalid/missing.m0b>
 m0: premature end of file <t/mob/invalid/too-small.m0b>
 m0: file <t/mob/invalid/no-magic.m0b> has wrong magic number
+m0: file <t/mob/invalid/zero-version.m0b> has wrong version

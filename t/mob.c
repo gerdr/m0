@@ -26,10 +26,16 @@ int main(void)
 	FILE *err = tmpfile();
 	assert(err != NULL);
 
+	assert(m0_mob_load(&interp, "t/mob/invalid/missing.m0b", err) == 0);
+	assert_msg(err, msg);
+
 	assert(m0_mob_load(&interp, "t/mob/invalid/too-small.m0b", err) == 0);
 	assert_msg(err, msg);
 
 	assert(m0_mob_load(&interp, "t/mob/invalid/no-magic.m0b", err) == 0);
+	assert_msg(err, msg);
+
+	assert(m0_mob_load(&interp, "t/mob/invalid/zero-version.m0b", err) == 0);
 	assert_msg(err, msg);
 
 	assert(getc(msg) == EOF);

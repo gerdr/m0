@@ -74,9 +74,7 @@ static bool verify_header(struct loader *loader)
 
 	if(memcmp(header->version, HEADER.version, sizeof HEADER.version))
 	{
-		cry(loader, "file <%s> has wrong version - expected %u, got %u",
-			loader->name, *HEADER.version, *header->version);
-
+		cry(loader, "file <%s> has wrong version", loader->name);
 		return 0;
 	}
 
