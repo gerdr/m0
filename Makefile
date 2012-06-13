@@ -1,9 +1,16 @@
 CC := clang
 CFLAGS := -std=c99 -Werror -Weverything
 
-CXX := clang++
-CXXNOWARN := global-constructors variadic-macros
-CXXFLAGS := -std=c++98 -Weverything $(CXXNOWARN:%=-Wno-%)
+I_FLAG := -I
+O_FLAG := -o
+C_FLAG := -c
+
+EXESUFFIX :=
+OBJSUFFIX := .o
+
+NOWARN := global-constructors variadic-macros
+CPPCHECK := clang++ -fsyntax-only -I .\
+	-std=c++98 -Weverything $(NOWARN:%=-Wno-%) -xc++
 
 RM := rm -f
 PERL := perl
@@ -12,11 +19,11 @@ ECHO := echo
 SPECS := $(wildcard spec/*)
 GEN_FILES := $(patsubst gen/%.pl,%,$(wildcard gen/*.pl gen/src/*.pl))
 SOURCES := $(subst ~,,$(filter-out $(GEN_FILES),$(wildcard src/*.c)))
-OBJECTS := $(SOURCES:src/%.c=%.o)
+OBJECTS := $(SOURCES:src/%.c=%$(OBJSUFFIX))
 TESTS := sanity mob ops
 TEST_SOURCES := $(TESTS:%=t/%.c)
 TEST_BINARIES := $(TESTS:%=t-%)
-BINARY := m0
+BINARY := m0$(EXESUFFIX)
 
 include Config
 
@@ -40,11 +47,11 @@ clean :
 realclean : clean
 	$(RM) $(GEN_FILES) $(BINARY)
 
-cppcheck : | $(GEN_FILES)
-	$(CXX) -fsyntax-only -I. $(CXXFLAGS) -xc++ $(SOURCES) $(TEST_SOURCES)
+cppcheck : $(GEN_FILES)
+	$(CPPCHECK) $(SOURCES) $(TEST_SOURCES)
 
 $(BINARY) : $(OBJECTS)
-	$(CC) -o $@ -I. $^
+	$(CC) $(O_FLAG) $@ $(I_FLAG) . $^
 
 $(GEN_FILES) : Config $(SPECS)
 
@@ -54,9 +61,9 @@ $(filter-out src/%,$(GEN_FILES)) : % : gen/%.pl ~%
 $(filter src/%,$(GEN_FILES)) : src/% : gen/src/%.pl src/~%
 	$(PERL) $< <src/~$(notdir $@) >$@
 
-$(OBJECTS) : %.o : src/%.c m0.h
-	$(CC) -c -o $@ -I. $(CFLAGS) $<
+$(OBJECTS) : %$(OBJSUFFIX) : src/%.c m0.h
+	$(CC) $(C_FLAG) $(O_FLAG) $@ $(I_FLAG) . $(CFLAGS) $<
 
-$(TEST_BINARIES) : OBJECTS := $(filter-out main.o,$(OBJECTS))
+$(TEST_BINARIES) : OBJECTS := $(filter-out main$(OBJSUFFIX),$(OBJECTS))
 $(TEST_BINARIES) : t-% : t/%.c $(OBJECTS)
-	$(CC) -o $@ -I. $(OBJECTS) $(CFLAGS) $<
+	$(CC) $(O_FLAG) $@ $(I_FLAG) . $(OBJECTS) $(CFLAGS) $<
