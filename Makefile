@@ -55,11 +55,11 @@ $(BINARY) : $(OBJECTS)
 
 $(GEN_FILES) : Config $(SPECS)
 
-$(filter-out src/%,$(GEN_FILES)) : % : gen/%.pl ~%
-	$(PERL) $< <~$@ >$@
+$(filter %.h,$(GEN_FILES)) : %.h : %~.h gen/%.h.pl
+	$(PERL) gen/$@.pl <$< >$@
 
-$(filter src/%,$(GEN_FILES)) : src/% : gen/src/%.pl src/~%
-	$(PERL) $< <src/~$(notdir $@) >$@
+$(filter %.c,$(GEN_FILES)) : %.c : %~.c gen/%.c.pl
+	$(PERL) gen/$@.pl <$< >$@
 
 $(OBJECTS) : %$(OBJSUFFIX) : src/%.c m0.h
 	$(CC) $(C_FLAG) $(O_FLAG) $@ $(I_FLAG) . $(CFLAGS) $<
