@@ -1,5 +1,6 @@
 # object files
 /*.o
+/*.obj
 
 # executables
 /m0

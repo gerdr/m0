@@ -2,9 +2,11 @@ CC := clang
 CFLAGS := -std=c99 -Werror -Weverything
 
 I_FLAG := -I
-O_FLAG := -o
 C_FLAG := -c
+OBJ_FLAG := -o
+EXE_FLAG := -o
 
+SEPARATOR := /
 EXESUFFIX :=
 OBJSUFFIX := .o
 
@@ -22,8 +24,10 @@ SOURCES := $(subst ~,,$(filter-out $(GEN_FILES),$(wildcard src/*.c)))
 OBJECTS := $(SOURCES:src/%.c=%$(OBJSUFFIX))
 TESTS := sanity mob ops
 TEST_SOURCES := $(TESTS:%=t/%.c)
-TEST_BINARIES := $(TESTS:%=t-%)
+TEST_BINARIES := $(TESTS:%=t-%$(EXESUFFIX))
 BINARY := m0$(EXESUFFIX)
+
+shellpath = $(subst /,$(SEPARATOR),$(1))
 
 include Config
 
@@ -39,31 +43,31 @@ list :
 	@$(ECHO) $(SOURCES)
 
 test : $(TEST_BINARIES)
-	$(foreach TEST,$^,./$(TEST);)
+	$(call shellpath,$(foreach TEST,$^,./$(TEST);))
 
 clean :
-	$(RM) $(OBJECTS) $(TEST_BINARIES)
+	$(RM) $(call shellpath,$(OBJECTS) $(TEST_BINARIES))
 
 realclean : clean
-	$(RM) $(GEN_FILES) $(BINARY)
+	$(RM) $(call shellpath,$(GEN_FILES) $(BINARY))
 
 cppcheck : $(GEN_FILES)
-	$(CPPCHECK) $(SOURCES) $(TEST_SOURCES)
+	$(CPPCHECK) $(call shellpath,$(SOURCES) $(TEST_SOURCES))
 
 $(BINARY) : $(OBJECTS)
-	$(CC) $(O_FLAG) $@ $(I_FLAG) . $^
+	$(CC) $(EXE_FLAG) $(call shellpath,$@) $(call shellpath,$^)
 
 $(GEN_FILES) : Config $(SPECS)
 
 $(filter %.h,$(GEN_FILES)) : %.h : %~.h gen/%.h.pl
-	$(PERL) gen/$@.pl <$< >$@
+	$(PERL) $(call shellpath,gen/$@.pl <$< >$@)
 
 $(filter %.c,$(GEN_FILES)) : %.c : %~.c gen/%.c.pl
-	$(PERL) gen/$@.pl <$< >$@
+	$(PERL) $(call shellpath,gen/$@.pl <$< >$@)
 
 $(OBJECTS) : %$(OBJSUFFIX) : src/%.c m0.h
-	$(CC) $(C_FLAG) $(O_FLAG) $@ $(I_FLAG) . $(CFLAGS) $<
+	$(CC) $(C_FLAG) $(OBJ_FLAG) $(call shellpath,$@) $(I_FLAG) . $(CFLAGS) $(call shellpath,$<)
 
 $(TEST_BINARIES) : OBJECTS := $(filter-out main$(OBJSUFFIX),$(OBJECTS))
-$(TEST_BINARIES) : t-% : t/%.c $(OBJECTS)
-	$(CC) $(O_FLAG) $@ $(I_FLAG) . $(OBJECTS) $(CFLAGS) $<
+$(TEST_BINARIES) : t-%$(EXESUFFIX) : t/%.c $(OBJECTS)
+	$(CC) $(EXE_FLAG) $(call shellpath,$@) $(I_FLAG) . $(OBJECTS) $(CFLAGS) $(call shellpath,$<)
