@@ -199,7 +199,7 @@ static inline size_t next_greater_pow2(size_t size)
 	for(unsigned exp = 0; (1 << exp) < SIZE_BIT; ++exp)
 		size |= size >> (1 << exp);
 
-	return ++size;
+	return size + 1;
 }
 
 #endif
