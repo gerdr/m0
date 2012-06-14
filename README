@@ -66,15 +66,10 @@ to a compiler bug fixed in 4.6 (not verified); it doesn't compile at all with
 g++ 4.5.
 
 
-Compiling with Visual Studio needs GNU make and perl; use
+Compiling with Visual Studio is supported, though you'll still need GNU make
+and perl in PATH (both Cygwin and MinGW versions should work). Instead of
+calling make directly, use the accompanying batch file, ie
 
-  $ make gen
-
-to generate necessary files and
-
-  $ make list
-
-to get the list of source files which go into the executable.
-
-Compiling as C++ is supposed to work with Visual Studio - please file a ticket
-if it doesn't.
+  $ vsmake
+  $ vsmake test
+  $ vsmake exe
