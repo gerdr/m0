@@ -54,10 +54,8 @@ realclean : clean
 cppcheck : $(GEN_FILES)
 	$(CPPCHECK) $(call shellpath,$(SOURCES) $(TEST_SOURCES))
 
-$(BINARY) : $(OBJECTS)
-	$(CC) $(EXE_FLAG) $(call shellpath,$@) $(call shellpath,$^)
-
 $(GEN_FILES) : Config $(SPECS)
+chunk$(OBJSUFFIX) : src/murmur3.h
 
 $(filter %.h,$(GEN_FILES)) : %.h : %~.h gen/%.h.pl
 	$(PERL) $(call shellpath,gen/$@.pl <$< >$@)
@@ -66,8 +64,11 @@ $(filter %.c,$(GEN_FILES)) : %.c : %~.c gen/%.c.pl
 	$(PERL) $(call shellpath,gen/$@.pl <$< >$@)
 
 $(OBJECTS) : %$(OBJSUFFIX) : src/%.c m0.h
-	$(CC) $(C_FLAG) $(OBJ_FLAG) $(call shellpath,$@) $(I_FLAG) . $(CFLAGS) $(call shellpath,$<)
+	$(CC) $(C_FLAG) $(OBJ_FLAG)$(call shellpath,$@) $(I_FLAG). $(CFLAGS) $(call shellpath,$<)
+
+$(BINARY) : $(OBJECTS)
+	$(CC) $(EXE_FLAG)$(call shellpath,$@) $(call shellpath,$^)
 
 $(TEST_BINARIES) : OBJECTS := $(filter-out main$(OBJSUFFIX),$(OBJECTS))
 $(TEST_BINARIES) : t-%$(EXESUFFIX) : t/%.c $(OBJECTS)
-	$(CC) $(EXE_FLAG) $(call shellpath,$@) $(I_FLAG) . $(OBJECTS) $(CFLAGS) $(call shellpath,$<)
+	$(CC) $(EXE_FLAG)$(call shellpath,$@) $(I_FLAG). $(OBJECTS) $(CFLAGS) $(call shellpath,$<)

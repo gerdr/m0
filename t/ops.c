@@ -3,7 +3,6 @@
 
 #undef NDEBUG
 #include <assert.h>
-#include <limits.h>
 
 int main(void)
 {

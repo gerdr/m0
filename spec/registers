@@ -7,6 +7,6 @@ CHUNK		uword	size_t
 CONSTS		cptr	const m0_segment *
 MDS			cptr	const m0_segment *
 BCS			cptr	const m0_segment *
-INTERP		ptr	m0_interp *
+INTERP		ptr		m0_interp *
 SPC4RENT
 SPILLCF		ptr		m0_callframe *

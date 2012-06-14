@@ -1,7 +1,10 @@
 #ifndef M0_H_
 #define M0_H_
 
+#ifndef __cplusplus
 #include <stdbool.h>
+#endif
+
 #include <stdint.h>
 #include <stdio.h>
 
@@ -104,15 +107,6 @@ struct m0_string_
 	uint8_t bytes[];
 };
 
-typedef struct m0_symbol_ m0_symbol;
-struct m0_symbol_
-{
-	uint32_t id;
-	uint32_t byte_size;
-	uint32_t hash;
-	uint8_t bytes[];
-};
-
 typedef struct m0_segment_ m0_segment;
 struct m0_segment_
 {
@@ -147,7 +141,6 @@ union m0_aliasinghack_
 	m0_object object_;
 	m0_segment segment_;
 	m0_string string_;
-	m0_symbol symbol_;
 	m0_direntry direntry_;
 };
 
