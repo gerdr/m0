@@ -23,7 +23,7 @@ GEN_FILES := $(patsubst gen/%.pl,%,$(wildcard gen/*.pl gen/src/*.pl))
 SOURCES := $(subst ~,,$(filter-out $(GEN_FILES),$(wildcard src/*.c)))
 OBJECTS := $(SOURCES:src/%.c=%$(OBJSUFFIX))
 TESTS := sanity mob ops
-TEST_SOURCES := $(TESTS:%=t/%.c)
+TEST_SOURCES := $(TESTS:%=t/t-%.c)
 TEST_BINARIES := $(TESTS:%=t-%$(EXESUFFIX))
 BINARY := m0$(EXESUFFIX)
 
@@ -70,5 +70,5 @@ $(BINARY) : $(OBJECTS)
 	$(CC) $(EXE_FLAG)$(call shellpath,$@) $(call shellpath,$^)
 
 $(TEST_BINARIES) : OBJECTS := $(filter-out main$(OBJSUFFIX),$(OBJECTS))
-$(TEST_BINARIES) : t-%$(EXESUFFIX) : t/%.c $(OBJECTS)
+$(TEST_BINARIES) : %$(EXESUFFIX) : t/%.c $(OBJECTS)
 	$(CC) $(EXE_FLAG)$(call shellpath,$@) $(I_FLAG). $(OBJECTS) $(CFLAGS) $(call shellpath,$<)
