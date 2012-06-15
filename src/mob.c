@@ -100,15 +100,14 @@ static bool load_chunks(struct loader *loader)
 
 	// TODO: verify id - need to come up with a general scheme
 
-	if(!m0_interp_reserve_chunks(loader->interp, dir->entry_count))
+	if(!m0_interp_reserve_chunks(loader->interp, dir->entry_count) ||
+		!m0_interp_reserve_chunk_map_slots(loader->interp, dir->entry_count))
 	{
 		cry(loader, "failed to reserve %u chunks for file <%s>",
 			(unsigned)dir->entry_count, loader->name);
 
 		return 0;
 	}
-
-	// TODO: enlarge chunk map if overloaded
 
 	for(size_t i = 0; i < dir->entry_count; ++i)
 	{
@@ -127,13 +126,15 @@ static bool load_chunks(struct loader *loader)
 			return 0;
 		}
 
-		m0_interp_push_reserved_chunk(loader->interp,
+		const m0_chunk chunk = {
 			(m0_string *)loader->cursor,
 			(m0_segment *)(blocks + entry->const_offset / sizeof *blocks),
 			(m0_segment *)(blocks + entry->meta_offset / sizeof *blocks),
-			(m0_segment *)(blocks + entry->code_offset / sizeof *blocks));
+			(m0_segment *)(blocks + entry->code_offset / sizeof *blocks)
+		};
 
-		// TODO: verify segments
+		m0_interp_push_reserved_chunk(loader->interp, &chunk);
+
 		// TODO: add chunk to chunk map
 		// TODO: skip name bytes
 
@@ -141,6 +142,13 @@ static bool load_chunks(struct loader *loader)
 	}
 
 	return 1;
+}
+
+static bool verify_chunks(struct loader *loader)
+{
+	// TODO: verify segements (walk through chunks)
+	(void)loader;
+	return 0;
 }
 
 bool m0_mob_load(m0_interp *interp, const char *name, FILE *err)
@@ -154,6 +162,9 @@ bool m0_mob_load(m0_interp *interp, const char *name, FILE *err)
 		goto FAIL;
 
 	if(!load_chunks(&loader))
+		goto FAIL;
+
+	if(!verify_chunks(&loader))
 		goto FAIL;
 
 	return 1;

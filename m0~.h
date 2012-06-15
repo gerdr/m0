@@ -161,13 +161,13 @@ extern bool m0_mob_load(m0_interp *interp, const char *name, FILE *err);
 extern bool m0_ops_run(m0_interp *interp, m0_callframe *cf);
 
 extern m0_callframe *m0_interp_alloc_cf(m0_interp *interp, size_t size);
+extern bool m0_interp_init_chunk_map(
+	m0_interp *interp, size_t size, uint32_t seed);
+extern bool m0_interp_reserve_chunk_map_slots(m0_interp *interp, size_t count);
 extern bool m0_interp_reserve_chunks(m0_interp *interp, size_t count);
-extern void m0_interp_push_reserved_chunk(m0_interp *interp,
-	const m0_string *name, const m0_segment *constants,
-	const m0_segment *metadata, const m0_segment *bytecode);
-extern bool m0_interp_push_chunk(m0_interp *interp, const m0_string *name,
-	const m0_segment *constants, const m0_segment *metadata,
-	const m0_segment *bytecode);
+extern void m0_interp_push_reserved_chunk(
+	m0_interp *interp, const m0_chunk *chunk);
+extern bool m0_interp_push_chunk(m0_interp *interp, const m0_chunk *chunk);
 
 #ifdef __cplusplus
 }
