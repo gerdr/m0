@@ -163,6 +163,7 @@ extern bool m0_ops_run(m0_interp *interp, m0_callframe *cf);
 extern m0_callframe *m0_interp_alloc_cf(m0_interp *interp, size_t size);
 extern bool m0_interp_init_chunk_map(
 	m0_interp *interp, size_t size, uint32_t seed);
+extern size_t m0_interp_chunk_map_size(const m0_interp *interp);
 extern bool m0_interp_reserve_chunk_map_slots(m0_interp *interp, size_t count);
 extern bool m0_interp_reserve_chunks(m0_interp *interp, size_t count);
 extern size_t m0_interp_push_reserved_chunk(

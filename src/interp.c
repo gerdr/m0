@@ -151,6 +151,12 @@ FAIL:
 	return 0;
 }
 
+size_t m0_interp_chunk_map_size(const m0_interp *interp)
+{
+	const struct map *map = (struct map *)m0_interp_chunk_map(interp);
+	return map->mask + 1;
+}
+
 static uint32_t hash_string(const m0_string *string, uint32_t seed)
 {
 	return murmur3_32(string->bytes, string->byte_size - sizeof *string, seed);

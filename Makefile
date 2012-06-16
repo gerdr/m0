@@ -22,7 +22,7 @@ SPECS := $(wildcard spec/*)
 GEN_FILES := $(patsubst gen/%.pl,%,$(wildcard gen/*.pl gen/src/*.pl))
 SOURCES := $(subst ~,,$(filter-out $(GEN_FILES),$(wildcard src/*.c)))
 OBJECTS := $(SOURCES:src/%.c=%$(OBJSUFFIX))
-TESTS := sanity mob ops
+TESTS := sanity chunk_map mob ops
 TEST_SOURCES := $(TESTS:%=t/t-%.c)
 TEST_BINARIES := $(TESTS:%=t-%$(EXESUFFIX))
 BINARY := m0$(EXESUFFIX)
@@ -43,7 +43,7 @@ list :
 	@$(ECHO) $(SOURCES)
 
 test : $(TEST_BINARIES)
-	$(call shellpath,$(foreach TEST,$^,./$(TEST);))
+	@$(ECHO) testing... && $(call shellpath,$(foreach TEST,$^,$(ECHO) ...$(TEST:%$(EXESUFFIX)=%) && ./$(TEST) &&)) $(ECHO) done.
 
 clean :
 	$(RM) $(call shellpath,$(OBJECTS) $(TEST_BINARIES))

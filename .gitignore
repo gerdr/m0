@@ -5,12 +5,7 @@
 # executables
 /m0
 /m0.exe
-/t-sanity
-/t-sanity.exe
-/t-mob
-/t-mob.exe
-/t-ops
-/t-ops.exe
+/t-*
 
 # generated files
 /m0.h
