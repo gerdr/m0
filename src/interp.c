@@ -7,7 +7,7 @@
 struct bucket
 {
 	uint32_t hash;
-	uint32_t index;
+	uint32_t chunk_id;
 };
 
 struct map
@@ -89,13 +89,15 @@ bool m0_interp_reserve_chunks(m0_interp *interp, size_t count)
 	return 1;
 }
 
-void m0_interp_push_reserved_chunk(m0_interp *interp, const m0_chunk *chunk)
+size_t m0_interp_push_reserved_chunk(m0_interp *interp, const m0_chunk *chunk)
 {
 	size_t count = m0_interp_chunk_count(interp);
 	m0_chunk *chunks = m0_interp_chunks(interp);
 
 	chunks[count] = *chunk;
 	m0_interp_set_chunk_count(interp, count + 1);
+
+	return count;
 }
 
 bool m0_interp_push_chunk(m0_interp *interp, const m0_chunk *chunk)
@@ -149,6 +151,65 @@ FAIL:
 	return 0;
 }
 
+static uint32_t hash_string(const m0_string *string, uint32_t seed)
+{
+	return murmur3_32(string->bytes, string->byte_size - sizeof *string, seed);
+}
+
+static bool register_chunk(struct map *map, uint32_t hash, uint32_t chunk_id)
+{
+	uint32_t slot = hash & map->mask;
+
+	size_t fill_count = map->index[slot];
+	assert(fill_count < (uint8_t)-1);
+
+	if(fill_count == 0)
+	{
+		map->buckets[slot].as_single.hash = hash;
+		map->buckets[slot].as_single.chunk_id = chunk_id;
+		map->index[slot] = 1;
+		return 1;
+	}
+
+	if(fill_count == 1)
+	{
+		struct bucket *bucket = (struct bucket *)malloc(sizeof *bucket);
+		if(!bucket) return 0;
+
+		bucket->hash = hash;
+		bucket->chunk_id = chunk_id;
+
+		map->buckets[slot].as_multiple = bucket;
+		map->index[slot] = 2;
+
+		return 1;
+	}
+
+	struct bucket *buckets = (struct bucket *)realloc(
+		map->buckets[slot].as_multiple, (fill_count + 1) * sizeof *buckets);
+
+	if(!buckets) return 0;
+
+	buckets[fill_count].hash = hash;
+	buckets[fill_count].chunk_id = (uint32_t)chunk_id;
+
+	map->buckets[slot].as_multiple = buckets;
+	map->index[slot] = (uint8_t)(fill_count + 1);
+
+	return 1;
+}
+
+bool m0_interp_register_reserved_chunk(
+	m0_interp *interp, const m0_string *name, size_t chunk_id)
+{
+	assert(chunk_id <= (uint32_t)-1);
+
+	struct map *map = (struct map *)m0_interp_chunk_map(interp);
+	uint32_t hash = hash_string(name, map->seed);
+
+	return register_chunk(map, hash, (uint32_t)chunk_id);
+}
+
 static inline size_t preferred_map_size(size_t load)
 {
 	// roughly corresponds to a load factor of 0.72,
@@ -178,6 +239,10 @@ bool m0_interp_reserve_chunk_map_slots(m0_interp *interp, size_t count)
 	if(!new_map || !new_index)
 		goto FAIL;
 
+	new_map->index = new_index;
+	new_map->mask = new_mask;
+	new_map->seed = map->seed;
+
 	for(size_t i = 0; i < current_size; ++i)
 	{
 		size_t fill_count = map->index[i];
@@ -185,18 +250,22 @@ bool m0_interp_reserve_chunk_map_slots(m0_interp *interp, size_t count)
 
 		if(fill_count == 1)
 		{
-			// TODO: add map->buckets[i].as_single
+			struct bucket *bucket = &map->buckets[i].as_single;
+			if(!register_chunk(map, bucket->hash, bucket->chunk_id))
+				goto DESTROY_AND_FAIL;
+
 			continue;
 		}
 
 		for(size_t j = 0; j < fill_count; ++j)
 		{
-			// TODO: add map->buckets[i].as_multiple[j]
+			struct bucket *bucket = &map->buckets[i].as_multiple[j];
+			if(!register_chunk(map, bucket->hash, bucket->chunk_id))
+				goto DESTROY_AND_FAIL;
+
+			continue;
 		}
 	}
-
-	new_map->index = new_index;
-	new_map->mask = new_mask;
 
 	m0_interp_set_chunk_map(interp, new_map);
 

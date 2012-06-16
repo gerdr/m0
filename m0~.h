@@ -165,8 +165,10 @@ extern bool m0_interp_init_chunk_map(
 	m0_interp *interp, size_t size, uint32_t seed);
 extern bool m0_interp_reserve_chunk_map_slots(m0_interp *interp, size_t count);
 extern bool m0_interp_reserve_chunks(m0_interp *interp, size_t count);
-extern void m0_interp_push_reserved_chunk(
+extern size_t m0_interp_push_reserved_chunk(
 	m0_interp *interp, const m0_chunk *chunk);
+extern bool m0_interp_register_reserved_chunk(
+	m0_interp *interp, const m0_string *name, size_t chunk_id);
 extern bool m0_interp_push_chunk(m0_interp *interp, const m0_chunk *chunk);
 
 #ifdef __cplusplus

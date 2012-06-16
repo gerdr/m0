@@ -133,9 +133,18 @@ static bool load_chunks(struct loader *loader)
 			(m0_segment *)(blocks + entry->code_offset / sizeof *blocks)
 		};
 
-		m0_interp_push_reserved_chunk(loader->interp, &chunk);
+		size_t chunk_id = m0_interp_push_reserved_chunk(
+			loader->interp, &chunk);
 
-		// TODO: add chunk to chunk map
+		if(!m0_interp_register_reserved_chunk(
+			loader->interp, chunk.name, chunk_id))
+		{
+			cry(loader, "allocation failure while loading file <%s>",
+				loader->name);
+
+			return 0;
+		}
+
 		// TODO: skip name bytes
 
 		assert(!&"TODO");
