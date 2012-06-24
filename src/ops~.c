@@ -1,13 +1,21 @@
 #define M0_SOURCE
 #include "m0.h"
 
+#include <setjmp.h>
 #include <stdio.h>
 
-static inline void op_noop(
+#define int(N) (*cf)[arg ## N].as_int
+#define uint(N) (*cf)[arg ## N].as_uint
+#define num(N) (*cf)[arg ## N].as_num
+
+#define proto(NAME) static inline void op_ ## NAME( \
 	m0_callframe *cf, uint8_t arg1, uint8_t arg2, uint8_t arg3)
+
+#define binop(NAME, TYPE, OP) proto(NAME) { TYPE(1) = TYPE(2) OP TYPE(3); }
+
+proto(noop)
 {
 	(void)cf, (void)arg1, (void)arg2, (void)arg3;
-	assert(!&"NOT IMPLEMENTED");
 }
 
 static inline void op_goto(
@@ -31,54 +39,13 @@ static inline void op_goto_chunk(
 	assert(!&"NOT IMPLEMENTED");
 }
 
-static inline void op_add_i(
-	m0_callframe *cf, uint8_t arg1, uint8_t arg2, uint8_t arg3)
-{
-	(void)cf, (void)arg1, (void)arg2, (void)arg3;
-	assert(!&"NOT IMPLEMENTED");
-}
-
-static inline void op_add_n(
-	m0_callframe *cf, uint8_t arg1, uint8_t arg2, uint8_t arg3)
-{
-	(void)cf, (void)arg1, (void)arg2, (void)arg3;
-	assert(!&"NOT IMPLEMENTED");
-}
-
-static inline void op_sub_i(
-	m0_callframe *cf, uint8_t arg1, uint8_t arg2, uint8_t arg3)
-{
-	(void)cf, (void)arg1, (void)arg2, (void)arg3;
-	assert(!&"NOT IMPLEMENTED");
-}
-
-static inline void op_sub_n(
-	m0_callframe *cf, uint8_t arg1, uint8_t arg2, uint8_t arg3)
-{
-	(void)cf, (void)arg1, (void)arg2, (void)arg3;
-	assert(!&"NOT IMPLEMENTED");
-}
-
-static inline void op_mult_i(
-	m0_callframe *cf, uint8_t arg1, uint8_t arg2, uint8_t arg3)
-{
-	(void)cf, (void)arg1, (void)arg2, (void)arg3;
-	assert(!&"NOT IMPLEMENTED");
-}
-
-static inline void op_mult_n(
-	m0_callframe *cf, uint8_t arg1, uint8_t arg2, uint8_t arg3)
-{
-	(void)cf, (void)arg1, (void)arg2, (void)arg3;
-	assert(!&"NOT IMPLEMENTED");
-}
-
-static inline void op_div_i(
-	m0_callframe *cf, uint8_t arg1, uint8_t arg2, uint8_t arg3)
-{
-	(void)cf, (void)arg1, (void)arg2, (void)arg3;
-	assert(!&"NOT IMPLEMENTED");
-}
+binop(add_i, uint, +)
+binop(add_n, num, +)
+binop(sub_i, uint, -)
+binop(sub_n, num, -)
+binop(mult_i, uint, *)
+binop(mult_n, num, *)
+binop(div_i, int, %)
 
 static inline void op_div_n(
 	m0_callframe *cf, uint8_t arg1, uint8_t arg2, uint8_t arg3)
@@ -143,47 +110,12 @@ static inline void op_convert_n_i(
 	assert(!&"NOT IMPLEMENTED");
 }
 
-static inline void op_ashr(
-	m0_callframe *cf, uint8_t arg1, uint8_t arg2, uint8_t arg3)
-{
-	(void)cf, (void)arg1, (void)arg2, (void)arg3;
-	assert(!&"NOT IMPLEMENTED");
-}
-
-static inline void op_lshr(
-	m0_callframe *cf, uint8_t arg1, uint8_t arg2, uint8_t arg3)
-{
-	(void)cf, (void)arg1, (void)arg2, (void)arg3;
-	assert(!&"NOT IMPLEMENTED");
-}
-
-static inline void op_shl(
-	m0_callframe *cf, uint8_t arg1, uint8_t arg2, uint8_t arg3)
-{
-	(void)cf, (void)arg1, (void)arg2, (void)arg3;
-	assert(!&"NOT IMPLEMENTED");
-}
-
-static inline void op_and(
-	m0_callframe *cf, uint8_t arg1, uint8_t arg2, uint8_t arg3)
-{
-	(void)cf, (void)arg1, (void)arg2, (void)arg3;
-	assert(!&"NOT IMPLEMENTED");
-}
-
-static inline void op_or(
-	m0_callframe *cf, uint8_t arg1, uint8_t arg2, uint8_t arg3)
-{
-	(void)cf, (void)arg1, (void)arg2, (void)arg3;
-	assert(!&"NOT IMPLEMENTED");
-}
-
-static inline void op_xor(
-	m0_callframe *cf, uint8_t arg1, uint8_t arg2, uint8_t arg3)
-{
-	(void)cf, (void)arg1, (void)arg2, (void)arg3;
-	assert(!&"NOT IMPLEMENTED");
-}
+binop(ashr, int, >>)
+binop(lshr, uint, >>)
+binop(shl, uint, <<)
+binop(and, uint, &)
+binop(or, uint, |)
+binop(xor, uint, ^)
 
 static inline void op_gc_alloc(
 	m0_callframe *cf, uint8_t arg1, uint8_t arg2, uint8_t arg3)
