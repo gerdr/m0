@@ -258,7 +258,7 @@ bool m0_interp_reserve_chunk_map_slots(m0_interp *interp, size_t count)
 		if(fill_count == 1)
 		{
 			struct bucket *bucket = &map->buckets[i].as_single;
-			if(!register_chunk(map, bucket->hash, bucket->chunk_id))
+			if(!register_chunk(new_map, bucket->hash, bucket->chunk_id))
 				goto DESTROY_AND_FAIL;
 
 			continue;
@@ -267,7 +267,7 @@ bool m0_interp_reserve_chunk_map_slots(m0_interp *interp, size_t count)
 		for(size_t j = 0; j < fill_count; ++j)
 		{
 			struct bucket *bucket = &map->buckets[i].as_multiple[j];
-			if(!register_chunk(map, bucket->hash, bucket->chunk_id))
+			if(!register_chunk(new_map, bucket->hash, bucket->chunk_id))
 				goto DESTROY_AND_FAIL;
 
 			continue;
