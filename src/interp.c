@@ -177,6 +177,7 @@ static bool register_chunk(struct map *map, uint32_t hash, uint32_t chunk_id)
 		return 1;
 	}
 
+	// FIXME: don't drop the old chunk!!!
 	if(fill_count == 1)
 	{
 		struct bucket *bucket = (struct bucket *)malloc(sizeof *bucket);
