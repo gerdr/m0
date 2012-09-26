@@ -177,16 +177,16 @@ static bool register_chunk(struct map *map, uint32_t hash, uint32_t chunk_id)
 		return 1;
 	}
 
-	// FIXME: don't drop the old chunk!!!
 	if(fill_count == 1)
 	{
-		struct bucket *bucket = (struct bucket *)malloc(sizeof *bucket);
-		if(!bucket) return 0;
+		struct bucket *buckets = (struct bucket *)malloc(2 * sizeof *buckets);
+		if(!buckets) return 0;
 
-		bucket->hash = hash;
-		bucket->chunk_id = chunk_id;
+		buckets[0] = map->buckets[slot].as_single;
+		buckets[1].hash = hash;
+		buckets[1].chunk_id = chunk_id;
 
-		map->buckets[slot].as_multiple = bucket;
+		map->buckets[slot].as_multiple = buckets;
 		map->index[slot] = 2;
 
 		return 1;
