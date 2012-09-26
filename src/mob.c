@@ -145,9 +145,8 @@ static bool load_chunks(struct loader *loader)
 			return 0;
 		}
 
-		// TODO: skip name bytes
-
-		assert(!&"TODO");
+		// skip name
+		read(loader, entry->byte_size - sizeof *entry);
 	}
 
 	return 1;
@@ -157,7 +156,7 @@ static bool verify_chunks(struct loader *loader)
 {
 	// TODO: verify segements (walk through chunks)
 	(void)loader;
-	return 0;
+	return 1;
 }
 
 bool m0_mob_load(m0_interp *interp, const char *name, FILE *err)
